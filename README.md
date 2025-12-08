@@ -43,8 +43,8 @@ A movie-accurate recreation of Tony Stark's JARVIS AI assistant from the Marvel 
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/YOUR_USERNAME/Jarvis_AI_Antigravity.git
-cd Jarvis_AI_Antigravity
+git clone https://github.com/YOUR_USERNAME/Jarvis-AI.git
+cd Jarvis-AI
 ```
 
 2. **Set up virtual environment**
@@ -134,7 +134,7 @@ Jarvis_AI_Antigravity/
 - [ ] **Phase 1E**: Study Sidekick
 - [ ] **Integration & Testing**
 
-See [task.md](https://github.com/YOUR_USERNAME/Jarvis_AI_Antigravity/blob/main/.gemini/antigravity/brain/2ad6012e-2eac-4cce-bf00-38df593a0570/task.md) for detailed progress.
+See [task.md](https://github.com/YOUR_USERNAME/Jarvis-AI/blob/main/.gemini/antigravity/brain/2ad6012e-2eac-4cce-bf00-38df593a0570/task.md) for detailed progress.
 
 ## 🤝 Contributing
 

@@ -6,6 +6,7 @@ from src.core.personality import JarvisPersonality
 from src.core.mac_control import MacController
 from src.core.focus_mode import FocusMode
 from src.core.workflows import WorkflowExecutor
+from src.core.scheduler import Scheduler
 from src.config.config import Config
 from typing import Optional
 import sys
@@ -42,6 +43,9 @@ class Jarvis:
         
         # Workflow executor
         self.workflows = WorkflowExecutor(self)
+        
+        # Scheduler for reminders and automated tasks
+        self.scheduler = Scheduler(self, Config.DATA_DIR / "scheduled_tasks.json")
         
         # Apply saved settings on startup
         if "preferred_volume" in self.settings:
@@ -272,6 +276,95 @@ class Jarvis:
             workflows = self.workflows.list_workflows()
             workflow_list = "\n".join([f"- {w}: {self.workflows.get_workflow_description(w)}" for w in workflows])
             return (True, f"Available workflows, sir:\n{workflow_list}")
+        
+        # ============================================================================
+        # SCHEDULING COMMANDS
+        # ============================================================================
+        
+        # Remind me in X minutes/hours
+        if "remind me" in lower_input and ("in" in lower_input or "after" in lower_input):
+            import re
+            
+            # Extract time
+            time_match = re.search(r'(\d+)\s*(minute|minutes|min|hour|hours|hr)', lower_input)
+            if time_match:
+                amount = int(time_match.group(1))
+                unit = time_match.group(2)
+                
+                # Convert to minutes
+                if "hour" in unit or "hr" in unit:
+                    delay_minutes = amount * 60
+                else:
+                    delay_minutes = amount
+                
+                # Extract message (everything after "to" or "about")
+                message = "Reminder"
+                if " to " in lower_input:
+                    message = lower_input.split(" to ", 1)[1].strip()
+                elif " about " in lower_input:
+                    message = lower_input.split(" about ", 1)[1].strip()
+                
+                task_id = self.scheduler.add_reminder(message, delay_minutes)
+                return (True, f"Reminder set for {delay_minutes} minutes, sir.")
+            else:
+                return (True, "Please specify time, sir. For example: 'remind me in 30 minutes'")
+        
+        # Every day at X, do Y
+        if ("every day" in lower_input or "daily" in lower_input) and " at " in lower_input:
+            import re
+            
+            # Extract time
+            time_match = re.search(r'(\d{1,2}):?(\d{2})?\s*(am|pm)?', lower_input)
+            if time_match:
+                hour = int(time_match.group(1))
+                minute = int(time_match.group(2)) if time_match.group(2) else 0
+                am_pm = time_match.group(3)
+                
+                # Convert to 24-hour format
+                if am_pm == "pm" and hour < 12:
+                    hour += 12
+                elif am_pm == "am" and hour == 12:
+                    hour = 0
+                
+                schedule_time = f"{hour:02d}:{minute:02d}"
+                
+                # Determine action
+                if "open" in lower_input or "launch" in lower_input:
+                    success, app_name = self._extract_app_name(user_input)
+                    if success:
+                        task_id = self.scheduler.add_recurring_task(
+                            description=f"Open {app_name} daily",
+                            action="open_app",
+                            params={"app": app_name},
+                            schedule_time=schedule_time,
+                            frequency="daily"
+                        )
+                        return (True, f"Scheduled to open {app_name} daily at {schedule_time}, sir.")
+                
+                return (True, "I understood the time, but not the action, sir.")
+            else:
+                return (True, "Please specify time, sir. For example: 'every day at 9:00 open mail'")
+        
+        # List scheduled tasks
+        if "list scheduled" in lower_input or "show scheduled" in lower_input or "my reminders" in lower_input:
+            tasks = self.scheduler.list_tasks()
+            if not tasks:
+                return (True, "No scheduled tasks, sir.")
+            
+            task_list = "Scheduled tasks, sir:\n"
+            for task in tasks:
+                task_list += f"- {task.description} ({task.trigger})\n"
+            return (True, task_list)
+        
+        # Cancel reminder/task
+        if "cancel reminder" in lower_input or "cancel task" in lower_input:
+            # For now, cancel the most recent task
+            tasks = self.scheduler.list_tasks()
+            if tasks:
+                task = tasks[-1]
+                self.scheduler.cancel_task(task.task_id)
+                return (True, f"Cancelled: {task.description}")
+            return (True, "No tasks to cancel, sir.")
         
         # ============================================================================
         # APP CONTROL COMMANDS - PRIORITY 1 (Check first!)
@@ -565,6 +658,9 @@ class Jarvis:
                 
                 if not user_input:
                     continue
+
+                # Run pending scheduled tasks
+                self.scheduler.run_pending()
 
                 # Increment interaction count
                 self.interaction_count += 1

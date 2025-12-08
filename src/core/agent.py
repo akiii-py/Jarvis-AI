@@ -57,10 +57,11 @@ class Jarvis:
         # GitHub integration
         self.github = GitHubController()
         
-        # App navigation system
+        # App navigation system with LLM-powered intent detection
         self.app_navigator = AppNavigator(
             mac_control=self.mac_control,
-            personality=JarvisPersonality
+            personality=JarvisPersonality,
+            llm_client=self.llm
         )
         
         # Apply saved settings on startup

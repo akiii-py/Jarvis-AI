@@ -92,6 +92,42 @@ class MacController:
         except Exception as e:
             return (False, f"I encountered an error opening {actual_app_name}: {e}")
     
+    def close_app(self, app_name: str) -> Tuple[bool, str]:
+        """
+        Close/quit an application.
+        
+        Args:
+            app_name: Name of the app to close (case-insensitive)
+        
+        Returns:
+            (success: bool, message: str)
+        """
+        # Normalize app name
+        app_name_lower = app_name.lower().strip()
+        
+        # Check mapping
+        actual_app_name = self.APP_MAPPINGS.get(app_name_lower, app_name)
+        
+        try:
+            # Use pkill to close the app
+            result = subprocess.run(
+                ["pkill", "-i", actual_app_name],
+                capture_output=True,
+                text=True,
+                timeout=5
+            )
+            
+            # pkill returns 0 if it found and killed processes
+            if result.returncode == 0:
+                return (True, f"Closed {actual_app_name}, sir.")
+            else:
+                return (False, f"I'm afraid {actual_app_name} doesn't appear to be running, sir.")
+                
+        except subprocess.TimeoutExpired:
+            return (False, f"Closing {actual_app_name} timed out, sir.")
+        except Exception as e:
+            return (False, f"I encountered an error closing {actual_app_name}: {e}")
+    
     def set_volume(self, level: int) -> Tuple[bool, str]:
         """
         Set system volume.

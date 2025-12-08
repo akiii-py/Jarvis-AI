@@ -80,6 +80,22 @@ class Jarvis:
                             return (True, message)
             return (True, "Which application would you like me to open, sir?")
         
+        # Mac Control - Close App
+        if any(phrase in lower_input for phrase in ["close ", "quit ", "exit "]):
+            # Extract app name after the trigger word
+            for trigger in ["close ", "quit ", "exit "]:
+                if trigger in lower_input:
+                    parts = lower_input.split(trigger, 1)
+                    if len(parts) > 1:
+                        app_name = parts[1].strip()
+                        app_name = app_name.replace(" for me", "").replace(" please", "")
+                        app_name = app_name.replace(" app", "").replace("the ", "")
+                        
+                        if app_name:
+                            success, message = self.mac_control.close_app(app_name)
+                            return (True, message)
+            return (True, "Which application would you like me to close, sir?")
+        
         # Mac Control - Volume
         if "volume up" in lower_input:
             success, message = self.mac_control.adjust_volume("up")

@@ -232,3 +232,17 @@ You are JARVIS. You are sophisticated but warm. You are witty but genuinely cari
         if duration and "{duration}" in phrase:
             phrase = phrase.format(duration=duration)
         return phrase
+    
+    @staticmethod
+    def get_acknowledgment() -> str:
+        """Returns a random acknowledgment phrase."""
+        import random
+        return random.choice(JarvisPersonality.ACKNOWLEDGMENTS)
+    
+    @staticmethod
+    def get_success_response(response_type="standard") -> str:
+        """Returns a success response based on type."""
+        import random
+        if response_type == "with_pride":
+            return "Well done, sir. As I anticipated."
+        return random.choice(["Task completed successfully, sir.", "Done, sir.", "As requested, sir."])

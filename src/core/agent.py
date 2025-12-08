@@ -7,6 +7,7 @@ from src.core.mac_control import MacController
 from src.core.focus_mode import FocusMode
 from src.core.workflows import WorkflowExecutor
 from src.core.scheduler import Scheduler
+from src.integrations.github_control import GitHubController
 from src.config.config import Config
 from typing import Optional
 import sys
@@ -46,6 +47,9 @@ class Jarvis:
         
         # Scheduler for reminders and automated tasks
         self.scheduler = Scheduler(self, Config.DATA_DIR / "scheduled_tasks.json")
+        
+        # GitHub integration
+        self.github = GitHubController()
         
         # Apply saved settings on startup
         if "preferred_volume" in self.settings:
@@ -365,6 +369,67 @@ class Jarvis:
                 self.scheduler.cancel_task(task.task_id)
                 return (True, f"Cancelled: {task.description}")
             return (True, "No tasks to cancel, sir.")
+        
+        # ============================================================================
+        # GITHUB INTEGRATION COMMANDS
+        # ============================================================================
+        
+        # Show my repos
+        if "show my repos" in lower_input or "list my repos" in lower_input or "my repositories" in lower_input:
+            success, message = self.github.list_repos()
+            return (True, message)
+        
+        # Create repo
+        if "create repo" in lower_input or "create repository" in lower_input:
+            # Extract repo name
+            import re
+            name_match = re.search(r'create repo(?:sitory)?\s+(?:called\s+)?([a-zA-Z0-9_-]+)', lower_input)
+            if name_match:
+                repo_name = name_match.group(1)
+                success, message = self.github.create_repo(repo_name)
+                return (True, message)
+            return (True, "Please specify repository name, sir. Example: 'create repo my-project'")
+        
+        # Latest commit
+        if "latest commit" in lower_input or "last commit" in lower_input or "recent commit" in lower_input:
+            success, message = self.github.get_latest_commit()
+            return (True, message)
+        
+        # Git status
+        if "git status" in lower_input or "repo status" in lower_input:
+            success, message = self.github.git_status()
+            if success and not message:
+                message = "Working tree clean, sir."
+            return (True, message)
+        
+        # Git push
+        if "git push" in lower_input or "push changes" in lower_input or "push code" in lower_input:
+            success, message = self.github.git_push()
+            return (True, message)
+        
+        # Git pull
+        if "git pull" in lower_input or "pull changes" in lower_input:
+            success, message = self.github.git_pull()
+            return (True, message)
+        
+        # Quick commit and push
+        if "commit and push" in lower_input or "quick commit" in lower_input:
+            # Extract commit message
+            message = "Update"
+            if " with message " in lower_input:
+                message = lower_input.split(" with message ", 1)[1].strip()
+            elif " message " in lower_input:
+                parts = lower_input.split(" message ", 1)
+                if len(parts) > 1:
+                    message = parts[1].strip()
+            
+            success, response = self.github.quick_commit_push(message)
+            return (True, response)
+        
+        # List branches
+        if "list branches" in lower_input or "show branches" in lower_input or "git branches" in lower_input:
+            success, message = self.github.git_branch()
+            return (True, message)
         
         # ============================================================================
         # APP CONTROL COMMANDS - PRIORITY 1 (Check first!)

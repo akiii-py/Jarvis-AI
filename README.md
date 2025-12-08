@@ -165,6 +165,15 @@ python main.py --voice
 | `show my settings` | Display saved preferences |
 | `show command history` | View recent commands |
 
+### Scheduling & Reminders
+| Command | Description |
+|---------|-------------|
+| `remind me in [X] minutes/hours` | Set one-time reminder |
+| `remind me in [X] minutes to [message]` | Reminder with custom message |
+| `every day at [time] open [app]` | Daily recurring task |
+| `list scheduled` / `my reminders` | Show all scheduled tasks |
+| `cancel reminder` / `cancel task` | Cancel most recent task |
+
 ## 📁 Project Structure
 
 ```

@@ -5,3 +5,4 @@ pyaudio
 openai-whisper
 sounddevice
 schedule
+PyGithub

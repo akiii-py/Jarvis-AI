@@ -21,11 +21,14 @@ class Config:
     # Agent Settings
     MAX_CONVERSATION_HISTORY = 10
     
-    # Voice Settings
-    PICOVOICE_ACCESS_KEY = os.getenv("PICOVOICE_ACCESS_KEY", "") # User must set this env var
-    WHISPER_MODEL_SIZE = "base"
-    TTS_VOICE = "Samantha"
+    # Voice settings
+    PICOVOICE_ACCESS_KEY = os.getenv("PICOVOICE_ACCESS_KEY", None)
+    WHISPER_MODEL_SIZE = "base"  # tiny, base, small, medium, large
+    TTS_VOICE = "Samantha"  # macOS voice name
     
+    # Mac control settings
+    ALLOWED_APPS = None  # None = allow all apps, or provide list of allowed app names
+    REQUIRE_CONFIRMATION = True  # Require confirmation for system changesthod
     @classmethod
     def ensure_dirs(cls):
         cls.DATA_DIR.mkdir(parents=True, exist_ok=True)

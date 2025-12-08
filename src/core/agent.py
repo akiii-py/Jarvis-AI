@@ -3,6 +3,7 @@ from src.core.llm import LLMClient
 from src.core.voice_io import VoiceInput, VoiceOutput
 from src.core.wake_word import WakeWordListener
 from src.core.personality import JarvisPersonality
+from src.core.mac_control import MacController
 from src.config.config import Config
 import sys
 
@@ -13,6 +14,7 @@ class Jarvis:
         self.current_mode = "coding"  # Default mode
         self.session_start_time = None  # Track session duration
         self.interaction_count = 0  # Track number of interactions
+        self.mac_control = MacController(allowed_apps=Config.ALLOWED_APPS)
         print(f"Jarvis initialized with model: {Config.DEFAULT_MODEL}")
         print(f"Current mode: {self.current_mode}")
 
@@ -58,6 +60,70 @@ class Jarvis:
         if "forget that" in lower_input or "forget what i told you" in lower_input:
             self.memory.save_preferences({"custom_memories": []})
             return (True, "Very good, sir. I've cleared all custom memories.")
+        
+        # Mac Control - App Launcher
+        # Check for app launch commands (more flexible matching)
+        if any(phrase in lower_input for phrase in ["open ", "launch ", "start "]):
+            # Extract app name after the trigger word
+            for trigger in ["open ", "launch ", "start "]:
+                if trigger in lower_input:
+                    # Get everything after the trigger word
+                    parts = lower_input.split(trigger, 1)
+                    if len(parts) > 1:
+                        # Clean up the app name (remove "the", "app", etc.)
+                        app_name = parts[1].strip()
+                        app_name = app_name.replace(" for me", "").replace(" please", "")
+                        app_name = app_name.replace(" app", "").replace("the ", "")
+                        
+                        if app_name:
+                            success, message = self.mac_control.open_app(app_name)
+                            return (True, message)
+            return (True, "Which application would you like me to open, sir?")
+        
+        # Mac Control - Volume
+        if "volume up" in lower_input:
+            success, message = self.mac_control.adjust_volume("up")
+            return (True, message)
+        elif "volume down" in lower_input:
+            success, message = self.mac_control.adjust_volume("down")
+            return (True, message)
+        elif "volume to full" in lower_input or "max volume" in lower_input or "full volume" in lower_input:
+            success, message = self.mac_control.set_volume(100)
+            return (True, message)
+        elif "mute" in lower_input or "volume to 0" in lower_input:
+            success, message = self.mac_control.set_volume(0)
+            return (True, message)
+        elif "set volume to" in lower_input or "volume to" in lower_input or "turn volume to" in lower_input:
+            try:
+                # Extract number
+                words = lower_input.split()
+                for i, word in enumerate(words):
+                    if word.isdigit():
+                        level = int(word)
+                        success, message = self.mac_control.set_volume(level)
+                        return (True, message)
+                return (True, "I didn't catch the volume level, sir. Please specify a number between 0 and 100.")
+            except:
+                return (True, "I'm afraid I couldn't parse that volume command, sir.")
+        
+        # Mac Control - Brightness
+        if "brightness up" in lower_input:
+            success, message = self.mac_control.set_brightness(75)  # Increase to 75%
+            return (True, message)
+        elif "brightness down" in lower_input:
+            success, message = self.mac_control.set_brightness(25)  # Decrease to 25%
+            return (True, message)
+        elif "set brightness to" in lower_input or "brightness to" in lower_input:
+            try:
+                words = lower_input.split()
+                for i, word in enumerate(words):
+                    if word.isdigit():
+                        level = int(word)
+                        success, message = self.mac_control.set_brightness(level)
+                        return (True, message)
+                return (True, "I didn't catch the brightness level, sir. Please specify a number between 0 and 100.")
+            except:
+                return (True, "I'm afraid I couldn't parse that brightness command, sir.")
         
         # Model switching commands
         if "switch to coding" in lower_input or "coding mode" in lower_input:

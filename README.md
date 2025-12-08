@@ -18,6 +18,7 @@ A movie-accurate recreation of Tony Stark's JARVIS AI assistant from the Marvel 
 - **Persistent Memory**: Remembers conversations across sessions
 - **User-Controlled Memory**: "Remember this" / "Forget that" commands
 - **Name Learning**: Learns and remembers your name
+- **Context-Aware Responses**: Adapts personality based on time, mode, and session duration
 
 ### 🎤 Voice Interface
 - **Wake Word Detection**: "Jarvis" activation (Porcupine)
@@ -25,12 +26,37 @@ A movie-accurate recreation of Tony Stark's JARVIS AI assistant from the Marvel 
 - **Speech-to-Text**: Whisper (local, private)
 - **Text-to-Speech**: macOS `say` command
 
+### 🖥️ Mac Control
+- **App Launcher**: Open/close applications with natural language
+  - "launch mail", "open chrome", "close discord"
+  - Smart app name recognition (email→Mail, vscode→VS Code)
+- **System Controls**: Volume and brightness adjustment
+  - "set volume to 50", "volume up", "mute"
+  - "brightness up", "set brightness to 75"
+- **Command Chaining**: Execute multiple commands at once
+  - "open chrome and launch mail"
+
+### 🎯 Productivity Features
+- **Smart Focus Mode**: Block distractions during work sessions
+  - "focus mode for 2 hours" - Blocks non-work apps
+  - Tracks interruptions and provides end-of-session summary
+- **Workflow Chains**: Automated multi-step tasks
+  - "prepare for coding" - Opens VS Code, Terminal, Chrome, sets volume
+  - "prepare for research" - Opens research apps, switches mode
+  - "end session" - Closes work apps, opens Mail
+- **Persistent Settings**: Remembers your preferences
+  - Default volume, brightness, and mode
+  - Auto-applied on startup
+- **Command Logging**: Track all commands with analytics
+  - "show command history" - View recent commands
+
 ### 🔧 Current Capabilities
 - Natural conversation with context awareness
 - Code assistance and explanations
 - Model switching for different tasks
 - Session monitoring with fatigue warnings
-- Persistent preferences and memory
+- Mac system control and automation
+- Productivity workflows and focus sessions
 
 ## 🚀 Quick Start
 
@@ -72,7 +98,12 @@ ollama serve
 
 ### Usage
 
-**Text Mode (Recommended for first run)**
+**Quick Launch (Recommended)**
+```bash
+./jarvis.sh
+```
+
+**Text Mode**
 ```bash
 python main.py
 ```
@@ -90,6 +121,7 @@ python main.py --voice
 
 ## 🎮 Commands
 
+### Core Commands
 | Command | Description |
 |---------|-------------|
 | `switch to coding mode` | Use qwen2.5-coder for programming |
@@ -102,6 +134,37 @@ python main.py --voice
 | `clear history` | Wipe conversation history |
 | `exit` / `quit` | Exit JARVIS |
 
+### Mac Control
+| Command | Description |
+|---------|-------------|
+| `open [app]` / `launch [app]` | Open an application |
+| `close [app]` / `quit [app]` | Close an application |
+| `open [app] and launch [app]` | Open multiple apps |
+| `set volume to [0-100]` | Set system volume |
+| `volume up` / `volume down` | Adjust volume |
+| `mute` / `max volume` | Quick volume presets |
+| `set brightness to [0-100]` | Set display brightness |
+| `brightness up` / `brightness down` | Adjust brightness |
+
+### Productivity
+| Command | Description |
+|---------|-------------|
+| `focus mode for [X] hours/minutes` | Start focus session |
+| `end focus` / `stop focus` | End focus session |
+| `focus status` | Check remaining focus time |
+| `prepare for coding` | Run coding workflow |
+| `prepare for research` | Run research workflow |
+| `end session` | Run end session workflow |
+| `list workflows` | Show available workflows |
+
+### Settings & Analytics
+| Command | Description |
+|---------|-------------|
+| `set my default volume to [X]` | Save volume preference |
+| `set my default mode to [mode]` | Save mode preference |
+| `show my settings` | Display saved preferences |
+| `show command history` | View recent commands |
+
 ## 📁 Project Structure
 
 ```
@@ -112,6 +175,9 @@ Jarvis_AI_Antigravity/
 │   │   ├── llm.py             # Ollama client
 │   │   ├── memory.py          # Conversation & preferences
 │   │   ├── personality.py     # JARVIS personality system
+│   │   ├── mac_control.py     # macOS system control
+│   │   ├── focus_mode.py      # Focus mode system
+│   │   ├── workflows.py       # Workflow executor
 │   │   ├── voice_io.py        # STT/TTS
 │   │   ├── wake_word.py       # Porcupine integration
 │   │   └── simple_wake.py     # Free wake detection
@@ -119,8 +185,15 @@ Jarvis_AI_Antigravity/
 │   │   └── config.py          # Configuration
 │   └── main.py                # Entry point
 ├── tests/
-│   └── test_model_switching.py
+│   ├── test_model_switching.py
+│   ├── test_mac_control.py
+│   └── test_close_app.py
 ├── data/                      # Persistent storage (gitignored)
+│   ├── conversation_history.json
+│   ├── preferences.json
+│   └── command_history.json
+├── jarvis.sh                  # Quick launch script
+├── activate.sh                # Venv activation helper
 ├── requirements.txt
 └── README.md
 ```
@@ -129,12 +202,16 @@ Jarvis_AI_Antigravity/
 
 - [x] **Phase 1A**: Foundation (LLM, memory, config)
 - [x] **Phase 1B**: Voice & Personality
-- [ ] **Phase 1C**: Mac Control & Files
+- [x] **Phase 1C**: Mac Control & Productivity Features
+  - [x] App launcher and system controls
+  - [x] Smart focus mode
+  - [x] Workflow chains
+  - [x] Command logging and analytics
 - [ ] **Phase 1D**: Coding Companion
 - [ ] **Phase 1E**: Study Sidekick
 - [ ] **Integration & Testing**
 
-See [task.md](https://github.com/YOUR_USERNAME/Jarvis-AI/blob/main/.gemini/antigravity/brain/2ad6012e-2eac-4cce-bf00-38df593a0570/task.md) for detailed progress.
+See [task.md](https://github.com/akiii-py/Jarvis-AI/blob/main/.gemini/antigravity/brain/2ad6012e-2eac-4cce-bf00-38df593a0570/task.md) for detailed progress.
 
 ## 🤝 Contributing
 

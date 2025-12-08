@@ -52,7 +52,11 @@ class Jarvis:
         self.workflows = WorkflowExecutor(self)
         
         # Scheduler for reminders and automated tasks
-        self.scheduler = Scheduler(self, Config.DATA_DIR / "scheduled_tasks.json")
+        self.scheduler = Scheduler()
+        self.workflows = WorkflowManager()
+        
+        # Initialize LLM-powered personality
+        self.personality = JarvisPersonality(llm_client=self.llm)
         
         # GitHub integration
         self.github = GitHubController()
@@ -60,13 +64,12 @@ class Jarvis:
         # App navigation system with LLM-powered intent detection
         self.app_navigator = AppNavigator(
             mac_control=self.mac_control,
-            personality=JarvisPersonality,
+            personality=self.personality,
             llm_client=self.llm
         )
         
-        # Apply saved settings on startup
-        if "preferred_volume" in self.settings:
-            self.mac_control.set_volume(self.settings["preferred_volume"])
+        # Don't apply settings on startup - only when user explicitly requests
+        # Settings are saved and can be applied on demand
         
         print(f"Jarvis initialized with model: {Config.DEFAULT_MODEL}")
         print(f"Current mode: {self.current_mode}")
@@ -715,8 +718,9 @@ class Jarvis:
                 voice_mode = False
 
 
-        # JARVIS-style greeting
-        greeting = JarvisPersonality.format_greeting(JarvisPersonality.get_time_of_day())
+        
+        # Display greeting
+        greeting = self.personality.format_greeting(self.personality.get_time_of_day())
         print(f"\nJarvis: {greeting}\n")
         if voice_mode and hasattr(self, 'voice_output'):
             self.voice_output.speak(greeting)

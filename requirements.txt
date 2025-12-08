@@ -1,0 +1,6 @@
+requests
+pydantic
+pvporcupine
+pyaudio
+openai-whisper
+sounddevice

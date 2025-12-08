@@ -4,3 +4,4 @@ pvporcupine
 pyaudio
 openai-whisper
 sounddevice
+schedule

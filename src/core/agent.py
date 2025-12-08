@@ -5,6 +5,7 @@ from src.core.wake_word import WakeWordListener
 from src.core.personality import JarvisPersonality
 from src.core.mac_control import MacController
 from src.core.focus_mode import FocusMode
+from src.core.workflows import WorkflowExecutor
 from src.config.config import Config
 from typing import Optional
 import sys
@@ -38,6 +39,9 @@ class Jarvis:
         
         # Focus mode
         self.focus_mode: Optional[FocusMode] = None
+        
+        # Workflow executor
+        self.workflows = WorkflowExecutor(self)
         
         # Apply saved settings on startup
         if "preferred_volume" in self.settings:
@@ -245,6 +249,29 @@ class Jarvis:
             if success and not self.focus_mode.is_app_allowed(app_name):
                 blocked_msg = self.focus_mode.handle_blocked_request(app_name)
                 return (True, blocked_msg)
+        
+        # ============================================================================
+        # WORKFLOW COMMANDS
+        # ============================================================================
+        
+        # Execute workflow
+        if any(phrase in lower_input for phrase in ["prepare for", "start session", "end session"]):
+            # Map phrases to workflows
+            if "coding" in lower_input or "code" in lower_input:
+                success, msg = self.workflows.execute("coding_session")
+                return (True, msg)
+            elif "research" in lower_input or "study" in lower_input:
+                success, msg = self.workflows.execute("research_session")
+                return (True, msg)
+            elif "end session" in lower_input or "finish session" in lower_input:
+                success, msg = self.workflows.execute("end_session")
+                return (True, msg)
+        
+        # List workflows
+        if "list workflows" in lower_input or "show workflows" in lower_input:
+            workflows = self.workflows.list_workflows()
+            workflow_list = "\n".join([f"- {w}: {self.workflows.get_workflow_description(w)}" for w in workflows])
+            return (True, f"Available workflows, sir:\n{workflow_list}")
         
         # ============================================================================
         # APP CONTROL COMMANDS - PRIORITY 1 (Check first!)

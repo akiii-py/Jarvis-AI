@@ -18,36 +18,6 @@ A movie-accurate recreation of Tony Stark's JARVIS AI assistant from the Marvel 
 - **Persistent Memory**: Remembers conversations across sessions
 - **User-Controlled Memory**: "Remember this" / "Forget that" commands
 - **Name Learning**: Learns and remembers your name
-- **Context-Aware Responses**: Adapts personality based on time, mode, and session duration
-
-### 🎤 Voice Interface
-- **Wake Word Detection**: "Jarvis" activation (Porcupine)
-- **Free Alternative**: Energy-based voice detection (no API key needed)
-- **Speech-to-Text**: Whisper (local, private)
-- **Text-to-Speech**: macOS `say` command
-
-### 🖥️ Mac Control
-- **App Launcher**: Open/close applications with natural language
-  - "launch mail", "open chrome", "close discord"
-  - Smart app name recognition (email→Mail, vscode→VS Code)
-- **System Controls**: Volume and brightness adjustment
-  - "set volume to 50", "volume up", "mute"
-  - "brightness up", "set brightness to 75"
-- **Command Chaining**: Execute multiple commands at once
-  - "open chrome and launch mail"
-
-### 🎯 Productivity Features
-- **Smart Focus Mode**: Block distractions during work sessions
-  - "focus mode for 2 hours" - Blocks non-work apps
-  - Tracks interruptions and provides end-of-session summary
-- **Workflow Chains**: Automated multi-step tasks
-  - "prepare for coding" - Opens VS Code, Terminal, Chrome, sets volume
-  - "prepare for research" - Opens research apps, switches mode
-  - "end session" - Closes work apps, opens Mail
-- **Persistent Settings**: Remembers your preferences
-  - Default volume, brightness, and mode
-  - Auto-applied on startup
-- **Scheduling & Reminders**: Time-based automation
   - "remind me in 30 minutes" - One-time reminders
   - "every day at 9 AM open mail" - Recurring tasks
   - Automated task execution
@@ -166,11 +136,28 @@ python main.py --voice
 |---------|-------------|
 | `focus mode for [X] hours/minutes` | Start focus session |
 | `end focus` / `stop focus` | End focus session |
-| `focus status` | Check remaining focus time |
-| `prepare for coding` | Run coding workflow |
-| `prepare for research` | Run research workflow |
-| `end session` | Run end session workflow |
-| `list workflows` | Show available workflows |
+| "focus mode for [X] hours" | Start focus session |
+| "end focus" | Stop focus mode |
+| "prepare for coding" | Launch coding workflow |
+| "prepare for research" | Launch research workflow |
+| "remind me in [X] minutes" | Set reminder |
+| "every day at [time] [action]" | Set recurring task |
+| "list scheduled" | Show all scheduled tasks |
+| "show my settings" | Display preferences |
+| "set default volume to [X]" | Save volume preference |
+
+### GitHub & Git
+| Command | Description |
+|---------|-------------|
+| `show my repos` / `list my repos` | List your GitHub repositories |
+| `create repo [name]` | Create new GitHub repository |
+| `latest commit` / `last commit` | Show most recent commit |
+| `git status` / `repo status` | Check repository status |
+| `git push` / `push changes` | Push to remote |
+| `git pull` / `pull changes` | Pull from remote |
+| `commit and push` | Quick add, commit, and push |
+| `commit and push with message [msg]` | Custom commit message |
+| `list branches` / `show branches` | Show all branches |
 
 ### Settings & Analytics
 | Command | Description |
@@ -189,18 +176,6 @@ python main.py --voice
 | `list scheduled` / `my reminders` | Show all scheduled tasks |
 | `cancel reminder` / `cancel task` | Cancel most recent task |
 
-### GitHub & Git
-| Command | Description |
-|---------|-------------|
-| `show my repos` / `list my repos` | List your GitHub repositories |
-| `create repo [name]` | Create new GitHub repository |
-| `latest commit` / `last commit` | Show most recent commit |
-| `git status` / `repo status` | Check repository status |
-| `git push` / `push changes` | Push to remote |
-| `git pull` / `pull changes` | Pull from remote |
-| `commit and push` | Quick add, commit, and push |
-| `commit and push with message [msg]` | Custom commit message |
-| `list branches` / `show branches` | Show all branches |
 
 ## 📁 Project Structure
 

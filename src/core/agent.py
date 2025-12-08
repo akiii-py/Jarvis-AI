@@ -4,7 +4,9 @@ from src.core.voice_io import VoiceInput, VoiceOutput
 from src.core.wake_word import WakeWordListener
 from src.core.personality import JarvisPersonality
 from src.core.mac_control import MacController
+from src.core.focus_mode import FocusMode
 from src.config.config import Config
+from typing import Optional
 import sys
 import re
 import json
@@ -33,6 +35,9 @@ class Jarvis:
         self.command_log = []
         self.command_log_file = Config.DATA_DIR / "command_history.json"
         self._load_command_log()
+        
+        # Focus mode
+        self.focus_mode: Optional[FocusMode] = None
         
         # Apply saved settings on startup
         if "preferred_volume" in self.settings:
@@ -186,6 +191,60 @@ class Jarvis:
         This ensures "launch mail" opens Mail instead of getting LLM response.
         """
         lower_input = user_input.lower().strip()
+        
+        # ============================================================================
+        # FOCUS MODE COMMANDS - PRIORITY 0 (Check before app control!)
+        # ============================================================================
+        
+        # Start focus mode
+        if "focus mode" in lower_input and ("start" in lower_input or "for" in lower_input or "begin" in lower_input):
+            # Extract duration
+            import re
+            duration_match = re.search(r'(\d+)\s*(hour|hours|minute|minutes|min|mins)', lower_input)
+            
+            if duration_match:
+                amount = int(duration_match.group(1))
+                unit = duration_match.group(2)
+                
+                # Convert to minutes
+                if "hour" in unit:
+                    duration_minutes = amount * 60
+                else:
+                    duration_minutes = amount
+                
+                # Default allowed apps for coding
+                allowed_apps = ["vscode", "terminal", "chrome", "iterm", "pycharm", "xcode"]
+                
+                self.focus_mode = FocusMode(duration_minutes, allowed_apps, self.current_mode)
+                
+                return (True, f"Focus mode activated for {duration_minutes} minutes, sir. I'll block distractions.")
+            else:
+                return (True, "Please specify duration, sir. For example: 'focus mode for 2 hours'")
+        
+        # End focus mode
+        if "end focus" in lower_input or "stop focus" in lower_input or "cancel focus" in lower_input:
+            if self.focus_mode and self.focus_mode.is_active():
+                summary = self.focus_mode.end_summary()
+                self.focus_mode = None
+                return (True, summary)
+            else:
+                return (True, "You're not in focus mode, sir.")
+        
+        # Check focus status
+        if "focus status" in lower_input or "how long" in lower_input and "focus" in lower_input:
+            if self.focus_mode and self.focus_mode.is_active():
+                remaining = self.focus_mode.time_remaining()
+                return (True, f"Focus mode active, sir. {remaining} minutes remaining.")
+            else:
+                return (True, "No active focus session, sir.")
+        
+        # Check if focus mode blocks this command
+        if self.focus_mode and self.focus_mode.is_active():
+            # Check if trying to open a non-allowed app
+            success, app_name = self._extract_app_name(user_input)
+            if success and not self.focus_mode.is_app_allowed(app_name):
+                blocked_msg = self.focus_mode.handle_blocked_request(app_name)
+                return (True, blocked_msg)
         
         # ============================================================================
         # APP CONTROL COMMANDS - PRIORITY 1 (Check first!)

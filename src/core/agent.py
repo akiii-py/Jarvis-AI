@@ -48,12 +48,12 @@ class Jarvis:
         # Focus mode
         self.focus_mode: Optional[FocusMode] = None
         
+
         # Workflow executor
         self.workflows = WorkflowExecutor(self)
         
         # Scheduler for reminders and automated tasks
-        self.scheduler = Scheduler()
-        self.workflows = WorkflowManager()
+        self.scheduler = Scheduler(self, Config.DATA_DIR / "scheduled_tasks.json")
         
         # Initialize LLM-powered personality
         self.personality = JarvisPersonality(llm_client=self.llm)

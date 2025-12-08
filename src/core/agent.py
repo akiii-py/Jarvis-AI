@@ -7,6 +7,7 @@ from src.core.mac_control import MacController
 from src.config.config import Config
 import sys
 import re
+import json
 from datetime import datetime
 
 
@@ -28,6 +29,11 @@ class Jarvis:
         self.interaction_count = 0
         self.mac_control = MacController(allowed_apps=Config.ALLOWED_APPS)
         
+        # Command logging
+        self.command_log = []
+        self.command_log_file = Config.DATA_DIR / "command_history.json"
+        self._load_command_log()
+        
         # Apply saved settings on startup
         if "preferred_volume" in self.settings:
             self.mac_control.set_volume(self.settings["preferred_volume"])
@@ -48,6 +54,38 @@ class Jarvis:
         self.current_mode = mode
         print(f"Switched to {mode} mode using model: {new_model}")
         return True
+
+    def _load_command_log(self):
+        """Load command history from disk."""
+        if self.command_log_file.exists():
+            try:
+                with open(self.command_log_file, 'r') as f:
+                    self.command_log = json.load(f)[-100:]  # Keep last 100 commands
+            except:
+                self.command_log = []
+
+    def _save_command_log(self):
+        """Save command history to disk."""
+        try:
+            with open(self.command_log_file, 'w') as f:
+                json.dump(self.command_log[-100:], f, indent=2)
+        except Exception as e:
+            print(f"Could not save command log: {e}")
+
+    def _log_command(self, user_input: str, is_command: bool, response: str, success: bool = True):
+        """Log a command execution."""
+        log_entry = {
+            "timestamp": datetime.now().isoformat(),
+            "command": user_input,
+            "is_command": is_command,
+            "success": success,
+            "response": response[:200]  # Truncate long responses
+        }
+        self.command_log.append(log_entry)
+        
+        # Save every 10 commands
+        if len(self.command_log) % 10 == 0:
+            self._save_command_log()
 
 
     def _extract_app_name(self, user_input: str) -> tuple[bool, str]:
@@ -295,6 +333,18 @@ class Jarvis:
 - User Name: {self.settings.get('user_name', 'Sir')}"""
             return (True, settings_text)
         
+        # Show command history
+        if "show command history" in lower_input or "show my commands" in lower_input:
+            if not self.command_log:
+                return (True, "No command history yet, sir.")
+            
+            recent_commands = self.command_log[-10:]  # Last 10 commands
+            history_text = "Recent command history, sir:\n"
+            for entry in recent_commands:
+                status = "✓" if entry.get("success", True) else "✗"
+                history_text += f"{status} {entry['command']} ({entry['timestamp'][:16]})\n"
+            return (True, history_text)
+        
         # ============================================================================
         # MEMORY/PREFERENCE COMMANDS
         # ============================================================================
@@ -333,6 +383,9 @@ class Jarvis:
         # ============================================================================
         # NOT A RECOGNIZED COMMAND - Send to LLM
         # ============================================================================
+        
+        # Log this interaction
+        self._log_command(user_input, False, "", True)
         
         return (False, "")
 

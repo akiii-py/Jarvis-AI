@@ -8,6 +8,7 @@ from src.core.focus_mode import FocusMode
 from src.core.workflows import WorkflowExecutor
 from src.core.scheduler import Scheduler
 from src.integrations.github_control import GitHubController
+from src.core.logger import JarvisLogger
 from src.config.config import Config
 from typing import Optional
 import sys
@@ -18,6 +19,10 @@ from datetime import datetime
 
 class Jarvis:
     def __init__(self):
+        # Initialize logger first
+        self.logger = JarvisLogger(Config.DATA_DIR / "logs", log_level="INFO")
+        self.logger.session_start("general")
+        
         self.memory = ConversationMemory()
         
         # Load persistent settings
@@ -33,6 +38,11 @@ class Jarvis:
         self.session_start_time = None
         self.interaction_count = 0
         self.mac_control = MacController(allowed_apps=Config.ALLOWED_APPS)
+        
+        # Save final state
+        self.logger.session_end()
+        self.memory.save_conversation()
+        self._save_command_log()
         
         # Command logging
         self.command_log = []
@@ -66,9 +76,14 @@ class Jarvis:
             print(f"Unknown mode: {mode}. Available: {list(Config.MODEL_PROFILES.keys())}")
             return False
         
-        new_model = Config.MODEL_PROFILES[mode]
-        self.llm = LLMClient(model=new_model)
+        new_model = Config.MODEL_PROFILES[mode]["model"]
+        self.llm.set_model(new_model)
+        old_mode = self.current_mode
         self.current_mode = mode
+        
+        # Log model switch
+        self.logger.model_switch(old_mode, mode, new_model)
+        
         print(f"Switched to {mode} mode using model: {new_model}")
         return True
 
@@ -91,6 +106,10 @@ class Jarvis:
 
     def _log_command(self, user_input: str, is_command: bool, response: str, success: bool = True):
         """Log a command execution."""
+        # Log to file
+        self.logger.command(user_input, is_command, success, response)
+        
+        # Also save to JSON for analytics
         log_entry = {
             "timestamp": datetime.now().isoformat(),
             "command": user_input,
@@ -202,6 +221,7 @@ class Jarvis:
         IMPORTANT: Commands are checked and executed BEFORE sending to LLM.
         This ensures "launch mail" opens Mail instead of getting LLM response.
         """
+        self.logger.debug(f"Processing input: {user_input}")
         lower_input = user_input.lower().strip()
         
         # ============================================================================

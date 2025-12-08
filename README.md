@@ -47,8 +47,23 @@ A movie-accurate recreation of Tony Stark's JARVIS AI assistant from the Marvel 
 - **Persistent Settings**: Remembers your preferences
   - Default volume, brightness, and mode
   - Auto-applied on startup
+- **Scheduling & Reminders**: Time-based automation
+  - "remind me in 30 minutes" - One-time reminders
+  - "every day at 9 AM open mail" - Recurring tasks
+  - Automated task execution
 - **Command Logging**: Track all commands with analytics
   - "show command history" - View recent commands
+
+### 🐙 GitHub Integration
+- **Repository Management**: Control GitHub from voice/text
+  - "show my repos" - List repositories
+  - "create repo my-project" - Create new repo
+  - "latest commit" - View recent commit
+- **Git Operations**: Local git automation
+  - "git status" - Check repo status
+  - "git push" / "git pull" - Sync with remote
+  - "commit and push with message [msg]" - Quick workflow
+  - "list branches" - Show all branches
 
 ### 🔧 Current Capabilities
 - Natural conversation with context awareness
@@ -173,6 +188,19 @@ python main.py --voice
 | `every day at [time] open [app]` | Daily recurring task |
 | `list scheduled` / `my reminders` | Show all scheduled tasks |
 | `cancel reminder` / `cancel task` | Cancel most recent task |
+
+### GitHub & Git
+| Command | Description |
+|---------|-------------|
+| `show my repos` / `list my repos` | List your GitHub repositories |
+| `create repo [name]` | Create new GitHub repository |
+| `latest commit` / `last commit` | Show most recent commit |
+| `git status` / `repo status` | Check repository status |
+| `git push` / `push changes` | Push to remote |
+| `git pull` / `pull changes` | Pull from remote |
+| `commit and push` | Quick add, commit, and push |
+| `commit and push with message [msg]` | Custom commit message |
+| `list branches` / `show branches` | Show all branches |
 
 ## 📁 Project Structure
 

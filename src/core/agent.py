@@ -13,13 +13,28 @@ from datetime import datetime
 class Jarvis:
     def __init__(self):
         self.memory = ConversationMemory()
+        
+        # Load persistent settings
+        self.settings = self.memory.preferences.get("default_settings", {
+            "preferred_volume": 50,
+            "preferred_brightness": 75,
+            "default_mode": "coding",
+            "user_name": "Sir"
+        })
+        
         self.llm = LLMClient()
-        self.current_mode = "coding"  # Default mode
-        self.session_start_time = None  # Track session duration
-        self.interaction_count = 0  # Track number of interactions
+        self.current_mode = self.settings.get("default_mode", "coding")
+        self.session_start_time = None
+        self.interaction_count = 0
         self.mac_control = MacController(allowed_apps=Config.ALLOWED_APPS)
+        
+        # Apply saved settings on startup
+        if "preferred_volume" in self.settings:
+            self.mac_control.set_volume(self.settings["preferred_volume"])
+        
         print(f"Jarvis initialized with model: {Config.DEFAULT_MODEL}")
         print(f"Current mode: {self.current_mode}")
+        print(f"Settings loaded: Volume={self.settings.get('preferred_volume')}%, Mode={self.current_mode}")
 
 
     def switch_model(self, mode: str) -> bool:
@@ -243,6 +258,42 @@ class Jarvis:
         
         elif "what mode" in lower_input or "current mode" in lower_input:
             return (True, f"Currently in {self.current_mode} mode using {self.llm.model}, sir.")
+        
+        # ============================================================================
+        # PERSISTENT SETTINGS COMMANDS
+        # ============================================================================
+        
+        # Set default volume
+        if "set my default volume to" in lower_input or "set default volume to" in lower_input:
+            try:
+                words = lower_input.split()
+                for word in words:
+                    if word.isdigit():
+                        level = int(word)
+                        if 0 <= level <= 100:
+                            self.settings["preferred_volume"] = level
+                            self.memory.save_preferences({"default_settings": self.settings})
+                            return (True, f"Default volume set to {level}%, sir. This will be applied on startup.")
+                return (True, "I didn't catch the volume level, sir.")
+            except:
+                return (True, "I'm afraid I couldn't parse that command, sir.")
+        
+        # Set default mode
+        if "set my default mode to" in lower_input or "set default mode to" in lower_input:
+            for mode in ["coding", "research", "general"]:
+                if mode in lower_input:
+                    self.settings["default_mode"] = mode
+                    self.memory.save_preferences({"default_settings": self.settings})
+                    return (True, f"Default mode set to {mode}, sir. This will be applied on startup.")
+            return (True, "Please specify coding, research, or general mode, sir.")
+        
+        # Show current settings
+        if "show my settings" in lower_input or "what are my settings" in lower_input:
+            settings_text = f"""Current settings, sir:
+- Default Volume: {self.settings.get('preferred_volume', 50)}%
+- Default Mode: {self.settings.get('default_mode', 'coding')}
+- User Name: {self.settings.get('user_name', 'Sir')}"""
+            return (True, settings_text)
         
         # ============================================================================
         # MEMORY/PREFERENCE COMMANDS

@@ -41,10 +41,25 @@ class AccessibilityHelper:
         """Type text character by character."""
         try:
             for char in text:
+                # Escape special characters for AppleScript
                 if char == '"':
-                    subprocess.run(['osascript', '-e', 'keystroke "\\"'], timeout=1)
+                    # Use backslash to escape quotes
+                    escaped_char = '\\"'
+                elif char == '\\':
+                    # Escape backslashes
+                    escaped_char = '\\\\'
                 else:
-                    subprocess.run(['osascript', '-e', f'keystroke "{char}"'], timeout=1)
+                    escaped_char = char
+                
+                # Use single quotes to wrap the character to avoid quote issues
+                script = f"tell application \"System Events\" to keystroke \"{escaped_char}\""
+                
+                try:
+                    subprocess.run(['osascript', '-e', script], timeout=1, capture_output=True)
+                except:
+                    # If that fails, try alternative method
+                    pass
+                
                 time.sleep(delay)
             return True
         except Exception as e:

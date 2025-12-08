@@ -115,6 +115,34 @@ class Jarvis:
         # APP CONTROL COMMANDS - PRIORITY 1 (Check first!)
         # ============================================================================
         
+        # Command Chaining - "open chrome and launch mail"
+        if " and " in lower_input and any(word in lower_input for word in ["open", "launch", "start", "close", "quit"]):
+            # Split by "and" and process each command
+            commands = user_input.split(" and ")
+            responses = []
+            
+            for cmd in commands:
+                cmd = cmd.strip()
+                
+                # Try to extract app name for open
+                success, app_name = self._extract_app_name(cmd)
+                if success:
+                    open_success, message = self.mac_control.open_app(app_name)
+                    if open_success:
+                        responses.append(f"opened {app_name}")
+                    continue
+                
+                # Try to extract app name for close
+                success, app_name = self._extract_close_app(cmd)
+                if success:
+                    close_success, message = self.mac_control.close_app(app_name)
+                    if close_success:
+                        responses.append(f"closed {app_name}")
+            
+            if responses:
+                ack = JarvisPersonality.get_acknowledgment()
+                return (True, f"{ack} I've {' and '.join(responses)}, sir.")
+        
         # Open/Launch App Command
         success, app_name = self._extract_app_name(user_input)
         if success:

@@ -15,6 +15,8 @@ class MacController:
     APP_MAPPINGS = {
         # Browsers
         "chrome": "Google Chrome",
+        "google chrome": "Google Chrome",
+        "browser": "Google Chrome",
         "safari": "Safari",
         "firefox": "Firefox",
         "brave": "Brave Browser",
@@ -23,24 +25,32 @@ class MacController:
         "vscode": "Visual Studio Code",
         "vs code": "Visual Studio Code",
         "code": "Visual Studio Code",
+        "visual studio": "Visual Studio Code",
         "pycharm": "PyCharm",
         "xcode": "Xcode",
         "terminal": "Terminal",
         "iterm": "iTerm",
+        "term": "Terminal",
         
         # Productivity
         "notion": "Notion",
         "slack": "Slack",
         "discord": "Discord",
         "spotify": "Spotify",
+        "music": "Spotify",
         "notes": "Notes",
+        "note": "Notes",
         "mail": "Mail",
+        "email": "Mail",
+        "inbox": "Mail",
         "calendar": "Calendar",
+        "cal": "Calendar",
         
         # System
         "finder": "Finder",
         "settings": "System Settings",
         "preferences": "System Settings",
+        "system preferences": "System Settings",
     }
     
     def __init__(self, allowed_apps: Optional[list] = None):

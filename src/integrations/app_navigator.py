@@ -57,8 +57,13 @@ class AppNavigator:
         """Handle Spotify commands."""
         lower_input = user_input.lower()
         
-        if "play" in lower_input and "spotify" in lower_input:
-            query = re.sub(r'(play|on spotify|spotify|song|playlist)', '', lower_input).strip()
+        # Check for common Spotify typos
+        has_spotify = any(word in lower_input for word in ["spotify", "spoify", "spotfy", "spotifi"])
+        
+        # PLAY COMMAND - more flexible detection
+        if "play" in lower_input:
+            # Extract song/playlist name
+            query = re.sub(r'(play|on spotify|spotify|spoify|spotfy|song|playlist|on|the)', '', lower_input).strip()
             if not query:
                 return (True, "I didn't catch what to play, sir.")
             
@@ -68,23 +73,28 @@ class AppNavigator:
                 return (True, f"{ack} Now playing {query} on Spotify, sir.")
             return (True, f"I couldn't find {query} on Spotify, sir.")
         
+        # PAUSE COMMAND
         elif "pause" in lower_input:
             self.spotify.pause()
             return (True, "Pausing Spotify, sir.")
         
+        # RESUME/CONTINUE COMMAND
         elif "resume" in lower_input or "continue" in lower_input:
             self.spotify.play()
             return (True, "Resuming playback, sir.")
         
+        # NEXT TRACK COMMAND
         elif "next" in lower_input or "skip" in lower_input:
             self.spotify.next_track()
             return (True, "Skipping to next track, sir.")
         
+        # PREVIOUS TRACK COMMAND
         elif "previous" in lower_input or "back" in lower_input:
             self.spotify.previous_track()
             return (True, "Going to previous track, sir.")
         
-        elif "current" in lower_input or "now playing" in lower_input:
+        # CURRENT TRACK COMMAND
+        elif "current" in lower_input or "now playing" in lower_input or "what" in lower_input:
             current = self.spotify.get_current_track()
             if current:
                 return (True, f"Currently playing: {current}, sir.")

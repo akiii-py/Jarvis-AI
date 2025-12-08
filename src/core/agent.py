@@ -40,11 +40,6 @@ class Jarvis:
         self.interaction_count = 0
         self.mac_control = MacController(allowed_apps=Config.ALLOWED_APPS)
         
-        # Save final state
-        self.logger.session_end()
-        self.memory.save_conversation()
-        self._save_command_log()
-        
         # Command logging
         self.command_log = []
         self.command_log_file = Config.DATA_DIR / "command_history.json"

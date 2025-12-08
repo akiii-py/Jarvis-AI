@@ -52,7 +52,7 @@ class IntentDetector:
         
         try:
             # Get LLM response
-            response = self.llm.chat([
+            response_generator = self.llm.chat([
                 {
                     "role": "system",
                     "content": "You are a command intent detector. Respond ONLY with valid JSON."
@@ -62,6 +62,11 @@ class IntentDetector:
                     "content": prompt
                 }
             ])
+            
+            # Convert generator to string
+            response = ""
+            for chunk in response_generator:
+                response += chunk
             
             # Parse LLM response
             intent_result = self._parse_llm_response(response, user_input)

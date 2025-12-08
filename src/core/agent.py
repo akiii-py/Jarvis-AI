@@ -8,6 +8,7 @@ from src.core.focus_mode import FocusMode
 from src.core.workflows import WorkflowExecutor
 from src.core.scheduler import Scheduler
 from src.integrations.github_control import GitHubController
+from src.integrations.app_navigator import AppNavigator
 from src.core.logger import JarvisLogger
 from src.config.config import Config
 from typing import Optional
@@ -60,6 +61,12 @@ class Jarvis:
         
         # GitHub integration
         self.github = GitHubController()
+        
+        # App navigation system
+        self.app_navigator = AppNavigator(
+            mac_control=self.mac_control,
+            personality=JarvisPersonality
+        )
         
         # Apply saved settings on startup
         if "preferred_volume" in self.settings:
@@ -667,6 +674,15 @@ class Jarvis:
             self.memory.clear_history()
             response = JarvisPersonality.get_acknowledgment()
             return (True, f"{response} I've cleared my memory of our previous conversations.")
+        
+        # ============================================================================
+        # APP NAVIGATION COMMANDS - PRIORITY 3 (Spotify, YouTube, WhatsApp, etc.)
+        # ============================================================================
+        
+        is_app_nav, response = self.app_navigator.handle_app_navigation(user_input)
+        if is_app_nav:
+            self._log_command(user_input, True, response, True)
+            return (True, response)
         
         # ============================================================================
         # NOT A RECOGNIZED COMMAND - Send to LLM

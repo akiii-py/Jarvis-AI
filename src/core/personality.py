@@ -246,3 +246,29 @@ You are JARVIS. You are sophisticated but warm. You are witty but genuinely cari
         if response_type == "with_pride":
             return "Well done, sir. As I anticipated."
         return random.choice(["Task completed successfully, sir.", "Done, sir.", "As requested, sir."])
+    
+    @staticmethod
+    def get_acknowledgment_for_context(context: str) -> str:
+        """Returns acknowledgment based on context."""
+        import random
+        
+        if context == "tired":
+            return random.choice([
+                "As you wish, sir. Though I must note the hour.",
+                "Certainly, sir. Might rest be advisable soon?",
+                "Very good, sir. Do take care of yourself."
+            ])
+        elif context == "concerned":
+            return random.choice([
+                "As you wish, sir. You've been working quite diligently.",
+                "Certainly, sir. Perhaps a brief respite would be wise?",
+                "Very good, sir. I'm here if you need anything."
+            ])
+        elif context == "technical":
+            return random.choice([
+                "Executing, sir.",
+                "Processing request, sir.",
+                "Understood, sir."
+            ])
+        else:
+            return JarvisPersonality.get_acknowledgment()

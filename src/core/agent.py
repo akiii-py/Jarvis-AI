@@ -87,6 +87,29 @@ class Jarvis:
         if len(self.command_log) % 10 == 0:
             self._save_command_log()
 
+    def get_contextual_personality(self) -> str:
+        """
+        Determine personality context based on current state.
+        Returns: "tired", "technical", "concerned", or "standard"
+        """
+        hour = datetime.now().hour
+        
+        # Late night / early morning
+        if hour >= 22 or hour < 6:
+            return "tired"
+        
+        # Long session (over 3 hours)
+        if self.session_start_time:
+            duration_hours = (datetime.now() - self.session_start_time).total_seconds() / 3600
+            if duration_hours > 3:
+                return "concerned"
+        
+        # Coding mode = more technical
+        if self.current_mode == "coding":
+            return "technical"
+        
+        return "standard"
+
 
     def _extract_app_name(self, user_input: str) -> tuple[bool, str]:
         """
@@ -202,7 +225,8 @@ class Jarvis:
             open_success, message = self.mac_control.open_app(app_name)
             # Always respond with personality, regardless of success
             if open_success:
-                ack = JarvisPersonality.get_acknowledgment()
+                context = self.get_contextual_personality()
+                ack = JarvisPersonality.get_acknowledgment_for_context(context)
                 return (True, ack)
             else:
                 return (True, f"I'm afraid I couldn't locate {app_name}, sir.")

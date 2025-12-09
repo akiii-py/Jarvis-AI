@@ -90,6 +90,7 @@ class IntentDetector:
 User Input: "{user_input}"
 
 Possible intents:
+- APP_OPEN: Opening a general application (Calculator, Notes, Safari, etc.)
 - SPOTIFY_PLAY: Playing a song/playlist/artist on Spotify
 - SPOTIFY_CONTROL: Controlling Spotify (pause, resume, next, previous, what's playing)
 - YOUTUBE_SEARCH: Searching for and playing a video on YouTube
@@ -101,6 +102,7 @@ Possible intents:
 - UNKNOWN: Can't determine intent
 
 Extract data intelligently:
+- For APP_OPEN: Extract app name (Calculator, Notes, Safari, Chrome, etc.)
 - For SPOTIFY_PLAY: Extract song/artist/playlist name (autocorrect typos like "spoify"→"spotify")
 - For SPOTIFY_CONTROL: Extract action (pause, resume, next, previous, current)
 - For WHATSAPP_MESSAGE: Extract contact name and message
@@ -109,6 +111,9 @@ Extract data intelligently:
 - For WEBSITE_VISIT: Extract website URL
 
 Examples:
+- "open calculator" → APP_OPEN, app: "Calculator"
+- "launch notes" → APP_OPEN, app: "Notes"
+- "open safari" → APP_OPEN, app: "Safari"
 - "play lo-fi beats" → SPOTIFY_PLAY, query: "lo-fi beats"
 - "yo put on some lofi" → SPOTIFY_PLAY, query: "lofi"
 - "pause" → SPOTIFY_CONTROL, action: "pause"

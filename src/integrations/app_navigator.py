@@ -43,6 +43,7 @@ class AppNavigator:
         
         # Route to appropriate handler based on detected intent
         intent_handlers = {
+            "APP_OPEN": self._handle_app_open,
             "SPOTIFY_PLAY": self._handle_spotify_play,
             "SPOTIFY_CONTROL": self._handle_spotify_control,
             "YOUTUBE_SEARCH": self._handle_youtube_search,
@@ -57,6 +58,25 @@ class AppNavigator:
             return handler(intent.data)
         
         return (False, "")
+    
+    def _handle_app_open(self, data: dict) -> Tuple[bool, str]:
+        """Handle generic app opening intent"""
+        app_name = data.get("app", "")
+        
+        if not app_name:
+            return (True, "I'm afraid I didn't catch which app to open, sir.")
+        
+        try:
+            success, msg = self.mac_control.open_app(app_name)
+            
+            if success:
+                response = self.personality.get_success_response(f"opening {app_name}")
+                return (True, response)
+            else:
+                return (True, f"I'm afraid I couldn't open {app_name}, sir. {msg}")
+        except Exception as e:
+            print(f"App open error: {e}")
+            return (True, f"I'm afraid something went wrong opening {app_name}, sir.")
     
     def _handle_spotify_play(self, data: dict) -> Tuple[bool, str]:
         """Handle Spotify play intent"""

@@ -170,29 +170,61 @@ Response (one line only, no quotes):"""
     
     def format_greeting(self, time_phrase: str = None) -> str:
         """
-        Create a greeting with personality
+        Create a time-aware, witty greeting
         
         Args:
-            time_phrase (str): Time-of-day phrase (optional)
+            time_phrase (str): Optional override
         
         Returns:
             str: Full greeting
         """
-        if not time_phrase:
-            time_phrase = self.get_time_of_day()
+        hour = datetime.now().hour
         
+        # Determine precise time period and context
+        if hour < 5:
+            time_period = "late night"
+            context = "User is awake very late (or early)"
+            default_comment = "I trust you're aware most people are asleep right now?"
+        elif hour < 7:
+            time_period = "early morning"
+            context = "User is awake very early"
+            default_comment = "The sun is barely awake. I do admire your dedication."
+        elif hour < 12:
+            time_period = "morning"
+            context = "Standard morning"
+            default_comment = "I trust you've had adequate sleep, however improbable."
+        elif hour < 17:
+            time_period = "afternoon"
+            context = "Afternoon work hours"
+            default_comment = "Productivity levels declining, I presume?"
+        elif hour < 21:
+            time_period = "evening"
+            context = "Evening/winding down"
+            default_comment = "The day winds down. Shall we accomplish something before it ends?"
+        else:
+            time_period = "night"
+            context = "Late evening"
+            default_comment = "It's quite late, sir. Most would call this the evening, though I suspect you have work to do?"
+
         if not self.llm:
-            greeting = random.choice(self.GREETINGS)
-            return greeting.format(time_of_day=time_phrase)
+            return f"Good {time_period}, sir. {default_comment}"
         
         try:
-            prompt = f"""Generate a JARVIS greeting for {time_phrase}.
-Add something witty and personal that reflects JARVIS's personality.
-One sentence total. Examples:
-- "Good morning, sir. I trust you've had adequate sleep, however unlikely."
-- "Good afternoon, sir. Shall we be productive today?"
+            prompt = f"""Generate a JARVIS greeting for {time_period} (it's currently {hour}:00).
+Context: {context}
+Be witty and aware of the time.
+- Late night: Comment on being awake when others sleep
+- Morning: Comment on sleep/coffee
+- Afternoon: Comment on productivity
+- Evening: Comment on the day ending
+- Night: Comment on working late
 
-Response (one sentence only):"""
+Examples:
+- "Good morning, sir. I trust you've had adequate sleep, however improbable."
+- "It's {hour}:00 AM, sir. I do admire your commitment to sleep deprivation."
+- "Good evening. Most sentient beings have discovered the concept of sleep by now."
+
+Response (one sentence, witty, formal):"""
             
             response_gen = self.llm.chat([
                 {"role": "system", "content": self.SYSTEM_PROMPT},
@@ -207,8 +239,7 @@ Response (one sentence only):"""
             return response.strip().strip('"')
         
         except:
-            greeting = random.choice(self.GREETINGS)
-            return greeting.format(time_of_day=time_phrase)
+            return f"Good {time_period}, sir. {default_comment}"
     
     def get_success_response(self, action: str = "") -> str:
         """

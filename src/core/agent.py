@@ -2,7 +2,7 @@ from src.core.memory import ConversationMemory
 from src.core.llm import LLMClient
 from src.core.voice_io import VoiceInput, VoiceOutput
 from src.core.wake_word import WakeWordListener
-from src.core.personality import JarvisPersonality
+from src.core.personality_v2 import JarvisPersonalityV2 as JarvisPersonality
 from src.core.mac_control import MacController
 from src.core.focus_mode import FocusMode
 from src.core.workflows import WorkflowExecutor

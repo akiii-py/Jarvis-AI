@@ -720,7 +720,7 @@ class Jarvis:
 
         
         # Display greeting
-        greeting = self.personality.format_greeting(self.personality.get_time_of_day())
+        greeting = self.personality.format_greeting()
         print(f"\nJarvis: {greeting}\n")
         if voice_mode and hasattr(self, 'voice_output'):
             self.voice_output.speak(greeting)

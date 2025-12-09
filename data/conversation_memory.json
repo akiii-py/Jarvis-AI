@@ -1,0 +1,23 @@
+{
+  "habits": {
+    "coding": 1
+  },
+  "history": [
+    {
+      "user": "hello jarvis",
+      "jarvis": "Good evening, sir. How do you manage to function with so little sleep?",
+      "timestamp": "2025-12-10T00:07:46.993907"
+    },
+    {
+      "user": "I'm coding something",
+      "jarvis": "Very good, sir",
+      "timestamp": "2025-12-10T00:07:46.994921"
+    },
+    {
+      "user": "debugging my code",
+      "jarvis": "Understood, sir",
+      "timestamp": "2025-12-10T00:07:46.995131"
+    }
+  ],
+  "last_updated": "2025-12-10T00:07:46.995199"
+}

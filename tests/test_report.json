@@ -1,0 +1,129 @@
+{
+  "timestamp": "2025-12-10T00:07:56.016977",
+  "summary": {
+    "total": 17,
+    "passed": 17,
+    "failed": 0
+  },
+  "results": [
+    {
+      "name": "LLM Client Initialization",
+      "category": "Core Systems",
+      "status": "\u2705 PASS",
+      "message": "LLM initialized with model: qwen2.5-coder:latest",
+      "error": null
+    },
+    {
+      "name": "Conversation Memory",
+      "category": "Core Systems",
+      "status": "\u2705 PASS",
+      "message": "Memory system initialized successfully",
+      "error": null
+    },
+    {
+      "name": "Mac Controller",
+      "category": "Core Systems",
+      "status": "\u2705 PASS",
+      "message": "Mac control system initialized",
+      "error": null
+    },
+    {
+      "name": "Basic LLM Chat",
+      "category": "LLM",
+      "status": "\u2705 PASS",
+      "message": "LLM responded: 'Test successful....'",
+      "error": null
+    },
+    {
+      "name": "Model Availability",
+      "category": "LLM",
+      "status": "\u2705 PASS",
+      "message": "Expected models: qwen2.5-coder:latest, deepseek-r1:latest, mistral:7b",
+      "error": null
+    },
+    {
+      "name": "Personality V2 Initialization",
+      "category": "Personality",
+      "status": "\u2705 PASS",
+      "message": "Personality V2 initialized with memory and context",
+      "error": null
+    },
+    {
+      "name": "Time-Aware Greeting",
+      "category": "Personality",
+      "status": "\u2705 PASS",
+      "message": "Generated: 'Good evening, sir. It is currently 0:00, and one can only ma...'",
+      "error": null
+    },
+    {
+      "name": "Context-Aware Response",
+      "category": "Personality",
+      "status": "\u2705 PASS",
+      "message": "Generated: 'Good evening, sir. How do you manage to function with so lit...'",
+      "error": null
+    },
+    {
+      "name": "Memory Manager",
+      "category": "Memory",
+      "status": "\u2705 PASS",
+      "message": "Memory manager initialized",
+      "error": null
+    },
+    {
+      "name": "Habit Detection",
+      "category": "Memory",
+      "status": "\u2705 PASS",
+      "message": "Detected coding habit: 1 occurrences",
+      "error": null
+    },
+    {
+      "name": "Memory Persistence",
+      "category": "Memory",
+      "status": "\u2705 PASS",
+      "message": "Memory file exists at: data/conversation_memory.json",
+      "error": null
+    },
+    {
+      "name": "Intent Detector Initialization",
+      "category": "Intent Detection",
+      "status": "\u2705 PASS",
+      "message": "Intent detector initialized",
+      "error": null
+    },
+    {
+      "name": "Spotify Intent Detection",
+      "category": "Intent Detection",
+      "status": "\u2705 PASS",
+      "message": "Detected: SPOTIFY_PLAY (confidence: 0.95)",
+      "error": null
+    },
+    {
+      "name": "App Opening Capability",
+      "category": "Mac System",
+      "status": "\u2705 PASS",
+      "message": "App opening method available",
+      "error": null
+    },
+    {
+      "name": "Volume Control Capability",
+      "category": "Mac System",
+      "status": "\u2705 PASS",
+      "message": "Volume control method available",
+      "error": null
+    },
+    {
+      "name": "Configuration Loading",
+      "category": "Configuration",
+      "status": "\u2705 PASS",
+      "message": "Model: qwen2.5-coder:latest, URL: http://localhost:11434",
+      "error": null
+    },
+    {
+      "name": "Data Directory",
+      "category": "Configuration",
+      "status": "\u2705 PASS",
+      "message": "Data directory exists: /Users/akshat/Desktop/Projects/Jarvis_AI_Antigravity/data",
+      "error": null
+    }
+  ]
+}

@@ -22,23 +22,46 @@ class LLMClient:
             if current_mode:
                 mode_info = f"""
 
-CURRENT MODE INFORMATION:
-You are currently operating in "{current_mode}" mode.
+═══════════════════════════════════════════════════════════════
+CRITICAL SYSTEM INFORMATION - READ CAREFULLY
+═══════════════════════════════════════════════════════════════
 
-Available modes:
-- coding: Optimized for programming, debugging, and technical tasks (using qwen2.5-coder model)
-- research: Optimized for deep reasoning, analysis, and research (using deepseek-r1 model)
-- general: Optimized for conversation and general tasks (using mistral model)
+YOU ARE CURRENTLY IN: {current_mode.upper()} MODE
 
-You can suggest the user switch modes by saying something like:
-"This task might be better suited for research mode, sir. Shall I switch?"
+AVAILABLE MODES (THESE ARE THE ONLY MODES THAT EXIST):
 
-The user can switch modes by saying:
-- "switch to coding mode"
-- "switch to research mode"  
-- "switch to general mode"
+1. CODING MODE (qwen2.5-coder model)
+   - Optimized for programming, debugging, code review
+   - Best for: Writing code, fixing bugs, explaining algorithms
+   - Current: {"✓ ACTIVE" if current_mode == "coding" else "○ Inactive"}
 
-Remember: You ARE aware of your current mode and CAN suggest switching when appropriate."""
+2. RESEARCH MODE (deepseek-r1 model)  
+   - Optimized for deep reasoning, analysis, research
+   - Best for: Complex explanations, research, detailed analysis
+   - Current: {"✓ ACTIVE" if current_mode == "research" else "○ Inactive"}
+
+3. GENERAL MODE (mistral model)
+   - Optimized for conversation and general tasks
+   - Best for: Casual chat, quick questions, general assistance
+   - Current: {"✓ ACTIVE" if current_mode == "general" else "○ Inactive"}
+
+IMPORTANT RULES:
+- These are the ONLY three modes that exist
+- DO NOT make up other modes (no "creative mode", "analytical mode", etc.)
+- When asked about modes, describe ONLY these three
+- You CAN suggest switching modes when appropriate
+- User can switch by saying: "switch to coding/research/general mode"
+
+EXAMPLE RESPONSES:
+Q: "what can you do in different modes?"
+A: "I have three modes, sir:
+- Coding mode (current): Optimized for programming and debugging
+- Research mode: For deep analysis and complex reasoning  
+- General mode: For conversation and general tasks
+Would you like me to switch modes?"
+
+═══════════════════════════════════════════════════════════════
+"""
                 system_content += mode_info
             
             # Add custom memories if provided

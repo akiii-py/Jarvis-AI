@@ -28,7 +28,7 @@ class SpotifyController:
             return False
     
     def search_and_play(self, query: str) -> bool:
-        """Search Spotify and play first result."""
+        """Search Spotify and play first song result (not playlist)."""
         try:
             if not self.open_spotify():
                 return False
@@ -37,33 +37,38 @@ class SpotifyController:
             self.accessibility.activate_app("Spotify")
             time.sleep(0.5)
             
-            # Use AppleScript to search and play
+            # Use AppleScript to search and navigate to Songs section
             script = f'''
             tell application "System Events"
                 tell process "Spotify"
                     -- Open search with Cmd+K
                     keystroke "k" using command down
-                    delay 0.5
+                    delay 0.8
                     
                     -- Type the search query
                     keystroke "{query}"
-                    delay 1
+                    delay 1.5
                     
                     -- Press return to search
                     keystroke return
-                    delay 1
+                    delay 1.2
                     
-                    -- Arrow down to first result
+                    -- Arrow down multiple times to get past playlists to songs
+                    -- Spotify typically shows: Top Result, Playlists, then Songs
+                    key code 125
+                    delay 0.2
+                    key code 125
+                    delay 0.2
                     key code 125
                     delay 0.3
                     
-                    -- Press return to play
+                    -- Press return to play the song
                     keystroke return
                 end tell
             end tell
             '''
             
-            subprocess.run(['osascript', '-e', script], timeout=5, check=True)
+            subprocess.run(['osascript', '-e', script], timeout=10, check=True)
             return True
             
         except subprocess.CalledProcessError as e:

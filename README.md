@@ -22,6 +22,10 @@ A movie-accurate recreation of Tony Stark's JARVIS AI assistant from the Marvel 
   - Weather report (Real-time)
   - Tech news headlines
   - System status & Battery check
+- **Research Agent** 🕵️‍♂️: "Research [topic]"
+  - **Terminal-Only Mode**: Searches internet visibly in terminal, no browser window
+  - **Deep Analysis**: Reads multiple sources and synthesizes a report
+  - **Auto-Reports**: Saves markdown reports to `data/research_reports/`
 - **Dynamic Model Switching**:
   - `coding` mode: qwen2.5-coder (programming, debugging)
   - `research` mode: deepseek-r1 (deep reasoning)
@@ -32,7 +36,7 @@ A movie-accurate recreation of Tony Stark's JARVIS AI assistant from the Marvel 
   - **YouTube**: Search and play videos directly
   - **System**: Volume, brightness, app launching/closing
 
-### � Productivity
+### 🔧 Productivity
 - **Smart Focus Mode**: Blocks distractions for set duration
 - **GitHub Integration**: Manage repos, push/pull code via voice
 - **Scheduling**: Reminders and recurring daily tasks
@@ -99,12 +103,20 @@ _Press SPACE/ENTER to start talking. Press again to stop._
 | "Morning briefing" | Weather, News, System Status |
 | "What's the update" | Quick status check |
 
+### 🕵️‍♂️ Research Agent
+| Command | Action |
+|---------|--------|
+| "Research [topic]" | Deep dive research (Terminal only) |
+| "Search for [topic]" | Search web and summarize |
+| "Find info on [topic]" | Gather info from multiple sources |
+| "Latest [topic] news" | Get latest updates |
+
 ### 🧭 App Navigation
 | Command | Action |
 |---------|--------|
 | "Open [App]" | Launch any application |
 | "Close [App]" | Quit an application |
-| "Search Google for [X]" | Opens browser with search results |
+| "Google [X]" | Opens browser with search results |
 | "Search YouTube for [X]" | Opens YouTube video directly |
 | "Go to [website.com]" | Navigates to specific URL |
 
@@ -144,11 +156,13 @@ Jarvis_AI_Antigravity/
 │   │   ├── keyboard_wake.py  # Push-to-talk system
 │   │   └── mac_control.py    # System integration
 │   ├── features/
-│   │   └── morning_briefing.py # Daily briefing logic
+│   │   ├── morning_briefing.py # Daily briefing logic
+│   │   └── research_agent.py   # Web scraper & report generator
 │   ├── integrations/
 │   │   ├── app_navigator.py  # App control router
 │   │   ├── browser_controller.py # Web automation
 │   │   ├── spotify_controller.py # Spotify AppleScript control
+│   │   ├── web_scraper.py    # Headless internet search
 │   │   └── intent_detector.py # LLM-based intent parser
 │   └── config/
 └── main.py                   # Entry point

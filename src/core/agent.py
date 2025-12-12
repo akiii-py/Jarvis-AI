@@ -694,27 +694,22 @@ class Jarvis:
         """Main interaction loop."""
         print(f"\nJarvis initialized. Voice Mode: {'ON' if voice_mode else 'OFF'}")
         
+        # Initialize voice components if needed
         if voice_mode:
             try:
-                self.voice_input = VoiceInput(model_size=Config.WHISPER_MODEL_SIZE)
-                self.voice_output = VoiceOutput(voice=Config.TTS_VOICE)
+                from src.core.voice_io import VoiceInput, VoiceOutput
+                from src.core.keyboard_wake import KeyboardWakeListener
                 
-                # Try Porcupine first, fallback to simple detection
-                if Config.PICOVOICE_ACCESS_KEY:
-                    from src.core.wake_word import WakeWordListener
-                    self.wake_word = WakeWordListener()
-                    print("Using Porcupine wake word detection")
-                else:
-                    from src.core.simple_wake import SimplePushToTalk
-                    self.wake_word = SimplePushToTalk()
-                    print("Using simple voice detection (no API key needed)")
+                print("🎙️  Initializing voice components...")
+                self.voice_input = VoiceInput(model_size=Config.WHISPER_MODEL_SIZE)
+                self.voice_output = VoiceOutput(use_elevenlabs=True)
+                self.wake_listener = KeyboardWakeListener()
+                print("✅ Voice mode ready!\n")
                     
             except Exception as e:
-                print(f"Failed to initialize voice modules: {e}")
+                print(f"❌ Failed to initialize voice modules: {e}")
                 print("Falling back to text mode.")
                 voice_mode = False
-
-
         
         # Display greeting
         greeting = self.personality.format_greeting()
@@ -725,32 +720,47 @@ class Jarvis:
         # Start session timer
         self.session_start_time = datetime.now()
         
+        # Main loop
         while True:
             try:
                 user_input = ""
                 
-                # Check session duration and show concern if needed
+                # Check session duration
                 if self.session_start_time:
                     session_duration = (datetime.now() - self.session_start_time).total_seconds() / 3600
                     if session_duration > 3 and self.interaction_count % 10 == 0:
-                        concern = JarvisPersonality.get_concern_phrase("fatigue", f"{int(session_duration)} hours")
+                        concern = "Sir, you've been working for quite some time. Perhaps a break is in order?"
                         print(f"\nJarvis: {concern}\n")
                         if voice_mode and hasattr(self, 'voice_output'):
                             self.voice_output.speak(concern)
                 
+                # Get user input
                 if voice_mode:
-                    print("Waiting for wake word...")
-                    if self.wake_word.listen():
-                        self.voice_output.speak("Yes?")
-                        user_input = self.voice_input.listen()
-                        print(f"You (Voice): {user_input}")
+                    # Wait for keyboard activation
+                    if not self.wake_listener.listen():
+                        # User pressed 'q' to quit
+                        farewell = "Very good, sir. Until next time."
+                        print(f"\nJarvis: {farewell}\n")
+                        if hasattr(self, 'voice_output'):
+                            self.voice_output.speak(farewell)
+                        break
+                    
+                    # Listen for voice command
+                    try:
+                        user_input = self.voice_input.listen(duration=5)
+                        print(f"\n💬 You said: {user_input}")
+                    except Exception as e:
+                        print(f"❌ Voice input error: {e}")
+                        continue
                 else:
+                    # Text mode
                     user_input = input("You: ").strip()
                 
-                if user_input.lower() in ["exit", "quit", "that will be all"]:
+                # Check for exit
+                if user_input.lower() in ["exit", "quit", "that will be all", "goodbye"]:
                     farewell = "Very good, sir. Until next time."
                     print(f"\nJarvis: {farewell}\n")
-                    if voice_mode:
+                    if voice_mode and hasattr(self, 'voice_output'):
                         self.voice_output.speak(farewell)
                     break
                 

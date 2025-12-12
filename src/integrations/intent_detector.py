@@ -91,14 +91,14 @@ User Input: "{user_input}"
 
 Possible intents:
 - APP_OPEN: Opening a general application (Calculator, Notes, Safari, etc.)
-- SPOTIFY_PLAY: Playing a song/playlist/artist on Spotify
-- SPOTIFY_CONTROL: Controlling Spotify (pause, resume, next, previous, what's playing)
+- SPOTIFY_PLAY: ONLY if user explicitly asks to play music/song/artist
+- SPOTIFY_CONTROL: Controlling Spotify (pause, resume, next, previous)
 - YOUTUBE_SEARCH: Searching for and playing a video on YouTube
 - GOOGLE_SEARCH: Searching Google
 - WHATSAPP_MESSAGE: Sending a message via WhatsApp
 - EMAIL_SEARCH: Searching emails in Mail app
 - WEBSITE_VISIT: Opening a website or browser with specific URL
-- GENERAL_CHAT: General conversation (not app-related)
+- GENERAL_CHAT: Default for conversation, questions, ideas, or if unclear
 - UNKNOWN: Can't determine intent
 
 Extract data intelligently:
@@ -117,6 +117,9 @@ Examples:
 - "open safari and search youtube.com" → WEBSITE_VISIT, website: "youtube.com"
 - "open chrome and go to google.com" → WEBSITE_VISIT, website: "google.com"
 - "go to youtube.com" → WEBSITE_VISIT, website: "youtube.com"
+- "i want to work on a new project" → GENERAL_CHAT
+- "give me some ideas" → GENERAL_CHAT
+- "tell me a joke" → GENERAL_CHAT
 - "play lo-fi beats" → SPOTIFY_PLAY, query: "lo-fi beats"
 - "play back in black on spotify" → SPOTIFY_PLAY, query: "back in black"
 - "play rakhlo tum chupaake from spotify" → SPOTIFY_PLAY, query: "rakhlo tum chupaake"

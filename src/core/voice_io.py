@@ -11,8 +11,12 @@ import pyaudio
 import wave
 import tempfile
 import subprocess
+import warnings
 from elevenlabs import ElevenLabs, VoiceSettings
 from dotenv import load_dotenv
+
+# Suppress FP16 warning on CPU
+warnings.filterwarnings("ignore", message="FP16 is not supported on CPU")
 
 # Load environment variables
 load_dotenv()
@@ -91,6 +95,7 @@ class VoiceInput:
             Transcribed text
         """
         audio_file = self.record_audio(duration)
+        print("🧠 Processing...")
         text = self.transcribe(audio_file)
         
         # Clean up temp file

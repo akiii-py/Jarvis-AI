@@ -1,80 +1,203 @@
-import subprocess
+"""
+Voice I/O Module with ElevenLabs Integration
+- Text-to-Speech using ElevenLabs API
+- Speech-to-Text using Whisper
+- Fallback to macOS 'say' command if ElevenLabs fails
+"""
+
+import os
 import whisper
 import pyaudio
 import wave
-import os
 import tempfile
-from pathlib import Path
-from src.config.config import Config
+import subprocess
+from elevenlabs import ElevenLabs, VoiceSettings
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
 
 class VoiceInput:
+    """Handle voice input using Whisper."""
+    
     def __init__(self, model_size: str = "base"):
-        print(f"Loading Whisper model ({model_size})...")
+        """Initialize Whisper model for speech recognition."""
+        print(f"Loading Whisper {model_size} model...")
         self.model = whisper.load_model(model_size)
-        print("Whisper model loaded.")
-
+        self.audio = pyaudio.PyAudio()
+    
     def record_audio(self, duration: int = 5, sample_rate: int = 16000) -> str:
         """
-        Records audio from the microphone for a fixed duration.
-        Returns the path to the temporary WAV file.
-        """
-        chunk = 1024
-        format = pyaudio.paInt16
-        channels = 1
+        Record audio from microphone.
         
-        p = pyaudio.PyAudio()
-        
-        stream = p.open(format=format,
-                        channels=channels,
-                        rate=sample_rate,
-                        input=True,
-                        frames_per_buffer=chunk)
-        
-        print("Listening...")
-        frames = []
-        
-        for _ in range(0, int(sample_rate / chunk * duration)):
-            data = stream.read(chunk)
-            frames.append(data)
+        Args:
+            duration: Recording duration in seconds
+            sample_rate: Audio sample rate
             
-        print("Finished recording.")
+        Returns:
+            Path to recorded audio file
+        """
+        print("🎤 Listening...")
+        
+        stream = self.audio.open(
+            format=pyaudio.paInt16,
+            channels=1,
+            rate=sample_rate,
+            input=True,
+            frames_per_buffer=1024
+        )
+        
+        frames = []
+        for _ in range(0, int(sample_rate / 1024 * duration)):
+            data = stream.read(1024)
+            frames.append(data)
         
         stream.stop_stream()
         stream.close()
-        p.terminate()
         
-        # Save to temp file
-        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
-            temp_filename = f.name
-            
-        wf = wave.open(temp_filename, 'wb')
-        wf.setnchannels(channels)
-        wf.setsampwidth(p.get_sample_size(format))
+        # Save to temporary file
+        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.wav')
+        wf = wave.open(temp_file.name, 'wb')
+        wf.setnchannels(1)
+        wf.setsampwidth(self.audio.get_sample_size(pyaudio.paInt16))
         wf.setframerate(sample_rate)
         wf.writeframes(b''.join(frames))
         wf.close()
         
-        return temp_filename
-
-    def transcribe(self, audio_path: str) -> str:
-        """Transcribes the audio file using Whisper."""
-        result = self.model.transcribe(audio_path)
+        return temp_file.name
+    
+    def transcribe(self, audio_file: str) -> str:
+        """
+        Transcribe audio file to text.
+        
+        Args:
+            audio_file: Path to audio file
+            
+        Returns:
+            Transcribed text
+        """
+        result = self.model.transcribe(audio_file)
         return result["text"].strip()
-
+    
     def listen(self, duration: int = 5) -> str:
-        """Records and transcribes audio."""
-        audio_path = self.record_audio(duration)
-        text = self.transcribe(audio_path)
-        os.remove(audio_path) # Clean up
+        """
+        Record and transcribe audio.
+        
+        Args:
+            duration: Recording duration in seconds
+            
+        Returns:
+            Transcribed text
+        """
+        audio_file = self.record_audio(duration)
+        text = self.transcribe(audio_file)
+        
+        # Clean up temp file
+        os.unlink(audio_file)
+        
         return text
+    
+    def __del__(self):
+        """Clean up audio resources."""
+        if hasattr(self, 'audio'):
+            self.audio.terminate()
+
 
 class VoiceOutput:
-    def __init__(self, voice: str = "Samantha"):
-        self.voice = voice
-
-    def speak(self, text: str):
-        """Speaks the text using macOS 'say' command."""
+    """Handle voice output using ElevenLabs or macOS say command."""
+    
+    def __init__(self, use_elevenlabs: bool = True):
+        """
+        Initialize voice output.
+        
+        Args:
+            use_elevenlabs: Whether to use ElevenLabs TTS (fallback to macOS say if False or fails)
+        """
+        self.use_elevenlabs = use_elevenlabs
+        self.elevenlabs_client = None
+        
+        if use_elevenlabs:
+            try:
+                api_key = os.getenv("ELEVENLABS_API_KEY")
+                if api_key:
+                    self.elevenlabs_client = ElevenLabs(api_key=api_key)
+                    print("🎙️  ElevenLabs TTS initialized")
+                else:
+                    print("⚠️  ELEVENLABS_API_KEY not found, using macOS say")
+                    self.use_elevenlabs = False
+            except Exception as e:
+                print(f"⚠️  ElevenLabs initialization failed: {e}, using macOS say")
+                self.use_elevenlabs = False
+    
+    def speak(self, text: str, voice_id: str = "pNInz6obpgDQGcFmaJgB") -> bool:
+        """
+        Speak the given text.
+        
+        Args:
+            text: Text to speak
+            voice_id: ElevenLabs voice ID 
+                     (default: Adam - British male voice)
+                     Other options:
+                     - "onwK4e9ZLuTAKqWW03F9" - Daniel (British, deep)
+                     - "pMsXgVXv3BLzUgSXRplE" - Charlie (British, casual)
+        
+        Returns:
+            True if successful
+        """
+        if self.use_elevenlabs and self.elevenlabs_client:
+            try:
+                # Generate audio using ElevenLabs
+                audio_generator = self.elevenlabs_client.text_to_speech.convert(
+                    voice_id=voice_id,
+                    optimize_streaming_latency="0",
+                    output_format="mp3_22050_32",
+                    text=text,
+                    model_id="eleven_turbo_v2_5",
+                    voice_settings=VoiceSettings(
+                        stability=0.5,
+                        similarity_boost=0.75,
+                        style=0.0,
+                        use_speaker_boost=True,
+                    ),
+                )
+                
+                # Save to temporary file
+                temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.mp3')
+                for chunk in audio_generator:
+                    if chunk:
+                        temp_file.write(chunk)
+                temp_file.close()
+                
+                # Play audio using afplay (macOS)
+                subprocess.run(['afplay', temp_file.name], check=True)
+                
+                # Clean up
+                os.unlink(temp_file.name)
+                
+                return True
+                
+            except Exception as e:
+                print(f"⚠️  ElevenLabs TTS failed: {e}, falling back to macOS say")
+                # Fallback to macOS say
+                return self._speak_macos(text)
+        else:
+            # Use macOS say command
+            return self._speak_macos(text)
+    
+    def _speak_macos(self, text: str) -> bool:
+        """
+        Fallback: Speak using macOS say command.
+        
+        Args:
+            text: Text to speak
+            
+        Returns:
+            True if successful
+        """
         try:
-            subprocess.run(["say", "-v", self.voice, text], check=True)
-        except subprocess.CalledProcessError as e:
-            print(f"Error speaking text: {e}")
+            subprocess.run(['say', '-v', 'Samantha', text], check=True)
+            return True
+        except Exception as e:
+            print(f"Error with macOS say: {e}")
+            return False

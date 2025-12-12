@@ -6,3 +6,5 @@ openai-whisper
 sounddevice
 schedule
 PyGithub
+elevenlabs
+python-dotenv

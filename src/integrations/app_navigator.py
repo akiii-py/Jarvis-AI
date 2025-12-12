@@ -29,7 +29,7 @@ class AppNavigator:
         
         # Initialize sub-controllers
         self.spotify = SpotifyController(mac_control)
-        self.browser = BrowserController(mac_control, browser="Safari")  # Use Safari as default
+        self.browser = BrowserController(mac_control)  # Auto-detect default browser
         self.automator = AppAutomator(mac_control)
         
         # Initialize LLM-powered intent detector

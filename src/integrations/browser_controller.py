@@ -3,6 +3,7 @@ Browser Controller Module
 - Search YouTube and play videos
 - Perform Google searches
 - Navigate to websites
+- Auto-detects system default browser
 """
 
 import subprocess
@@ -10,13 +11,59 @@ import time
 from .element_finder import AccessibilityHelper
 
 
+def get_default_browser() -> str:
+    """
+    Detect the system's default browser on macOS.
+    
+    Returns:
+        str: Name of the default browser app (e.g., "Safari", "Google Chrome", "Firefox")
+    """
+    try:
+        # Use macOS launch services to get default HTTP handler
+        result = subprocess.run(
+            ['defaults', 'read', 'com.apple.LaunchServices/com.apple.launchservices.secure', 'LSHandlers'],
+            capture_output=True,
+            text=True,
+            timeout=2
+        )
+        
+        # Parse output to find HTTP handler
+        output = result.stdout
+        
+        # Common browser identifiers
+        browser_map = {
+            'safari': 'Safari',
+            'chrome': 'Google Chrome',
+            'firefox': 'Firefox',
+            'brave': 'Brave Browser',
+            'edge': 'Microsoft Edge',
+            'opera': 'Opera',
+            'arc': 'Arc'
+        }
+        
+        # Check which browser is in the output
+        output_lower = output.lower()
+        for key, browser_name in browser_map.items():
+            if key in output_lower:
+                return browser_name
+        
+        # Fallback to Safari (default macOS browser)
+        return "Safari"
+        
+    except Exception as e:
+        print(f"Could not detect default browser: {e}")
+        return "Safari"  # Safe default for macOS
+
+
 class BrowserController:
     """Control web browser for navigation and searching."""
     
-    def __init__(self, mac_control, browser: str = "Google Chrome"):
+    def __init__(self, mac_control, browser: str = None):
         self.mac_control = mac_control
         self.accessibility = AccessibilityHelper()
-        self.browser = browser
+        # Auto-detect browser if not specified
+        self.browser = browser if browser else get_default_browser()
+        print(f"🌐 Using browser: {self.browser}")
     
     def open_browser(self) -> bool:
         """Open default browser."""

@@ -67,7 +67,7 @@ Would you like me to switch modes?"
             
             # Add custom memories if provided
             if custom_memories:
-                memory_text = "\n\nIMPORTANT FACTS TO REMEMBER:\n" + "\n.join(f"- {mem}" for mem in custom_memories)
+                memory_text = "\n\nIMPORTANT FACTS TO REMEMBER:\n" + "\n".join(f"- {mem}" for mem in custom_memories)
                 system_content += memory_text
             
             messages = [

@@ -575,18 +575,15 @@ class Jarvis:
         
         if "switch to coding" in lower_input or "coding mode" in lower_input:
             self.switch_model("coding")
-            response = JarvisPersonality.get_success_response("with_pride")
-            return (True, f"{response} Switched to coding mode, sir.")
+            return (True, "Switched to coding mode, sir.")
         
         elif "switch to research" in lower_input or "research mode" in lower_input:
             self.switch_model("research")
-            response = JarvisPersonality.get_success_response("with_pride")
-            return (True, f"{response} Switched to research mode, sir.")
+            return (True, "Switched to research mode, sir.")
         
         elif "switch to general" in lower_input or "general mode" in lower_input:
             self.switch_model("general")
-            response = JarvisPersonality.get_success_response("with_pride")
-            return (True, f"{response} Switched to general mode, sir.")
+            return (True, "Switched to general mode, sir.")
         
         elif "what mode" in lower_input or "current mode" in lower_input or "which mode" in lower_input:
             return (True, f"Currently in {self.current_mode} mode using {self.llm.model}, sir.")

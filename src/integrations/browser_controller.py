@@ -73,18 +73,35 @@ class BrowserController:
         except:
             return False
     
-    def go_to_url(self, url: str) -> bool:
+    def open_new_tab(self) -> bool:
+        """Open a new tab in the browser."""
+        try:
+            self.accessibility.activate_app(self.browser)
+            time.sleep(0.3)
+            # Cmd+T opens new tab
+            subprocess.run(['osascript', '-e', 'tell application "System Events" to keystroke "t" using command down'], timeout=1)
+            time.sleep(0.5)
+            return True
+        except:
+            return False
+    
+    def go_to_url(self, url: str, new_tab: bool = True) -> bool:
         """Navigate to a URL."""
         try:
             if not self.open_browser():
                 return False
             
             time.sleep(1)
+            
+            # Open new tab if requested
+            if new_tab:
+                self.open_new_tab()
+            
             self.accessibility.activate_app(self.browser)
             time.sleep(0.2)
             
             # Cmd+L focuses address bar
-            subprocess.run(['osascript', '-e', 'keystroke "l" using command down'], timeout=1)
+            subprocess.run(['osascript', '-e', 'tell application "System Events" to keystroke "l" using command down'], timeout=1)
             time.sleep(0.3)
             
             # Add https:// if not present
@@ -101,9 +118,9 @@ class BrowserController:
             return False
     
     def search_youtube(self, query: str) -> bool:
-        """Search YouTube for video."""
+        """Search YouTube for video in a new tab."""
         try:
-            if not self.go_to_url("youtube.com"):
+            if not self.go_to_url("youtube.com", new_tab=True):
                 return False
             
             time.sleep(2)
@@ -129,9 +146,9 @@ class BrowserController:
             return False
     
     def search_google(self, query: str) -> bool:
-        """Perform Google search."""
+        """Perform Google search in a new tab."""
         try:
-            if not self.go_to_url("google.com"):
+            if not self.go_to_url("google.com", new_tab=True):
                 return False
             
             time.sleep(1)
@@ -148,5 +165,5 @@ class BrowserController:
             return False
     
     def open_website(self, website: str) -> bool:
-        """Open a specific website."""
-        return self.go_to_url(website)
+        """Open a specific website in a new tab."""
+        return self.go_to_url(website, new_tab=True)

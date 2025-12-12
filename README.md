@@ -6,49 +6,45 @@ A movie-accurate recreation of Tony Stark's JARVIS AI assistant from the Marvel 
 
 ### 🎭 Movie-Accurate Personality
 - Sophisticated British formality with dry wit and sarcasm
-- Context-aware responses (time of day, session duration, user state)
-- Escalating concern system for user wellbeing
-- Genuine loyalty wrapped in understated humor
+- **Context-Aware Responses**: Logic changes based on time (tired at night), coding mode (technical), or long sessions (concerned)
+- **Escalating Loyalty**: Genuine care for user wellbeing
+- **Dynamic Interaction**: "Push-to-talk" and "Barge-in" interruption capability
 
-### 🧠 Intelligence
-- **Dynamic Model Switching**: Switch between specialized models
-  - `coding` mode: qwen2.5-coder (programming, debugging, DSA)
-  - `research` mode: deepseek-r1 (deep reasoning, analysis)
+### 🗣️ Advanced Voice System
+- **Speech-to-Text**: Local Whisper model for accurate transcription
+- **Text-to-Speech**: **ElevenLabs Integration** for premium, movie-like British voice
+- **Wake Methods**:
+  - **Keyboard Wake**: Press `Space` to talk, press again to stop (Unlimited duration)
+  - **Picovoice**: "Hey Jarvis" wake word detection (Optional)
+
+### 🧠 Intelligence & Features
+- **Morning Briefing Protocol** ☀️: "Start my day"
+  - Weather report (Real-time)
+  - Tech news headlines
+  - System status & Battery check
+- **Dynamic Model Switching**:
+  - `coding` mode: qwen2.5-coder (programming, debugging)
+  - `research` mode: deepseek-r1 (deep reasoning)
   - `general` mode: mistral:7b (conversation)
-- **Persistent Memory**: Remembers conversations across sessions
-- **User-Controlled Memory**: "Remember this" / "Forget that" commands
-- **Name Learning**: Learns and remembers your name
-  - "remind me in 30 minutes" - One-time reminders
-  - "every day at 9 AM open mail" - Recurring tasks
-  - Automated task execution
-- **Command Logging**: Track all commands with analytics
-  - "show command history" - View recent commands
+- **App Navigation System** 🧭:
+  - **Spotify**: Play songs, control playback ("Play Back in Black")
+  - **Browser**: Search Google, open URLs, manage tabs
+  - **YouTube**: Search and play videos directly
+  - **System**: Volume, brightness, app launching/closing
 
-### 🐙 GitHub Integration
-- **Repository Management**: Control GitHub from voice/text
-  - "show my repos" - List repositories
-  - "create repo my-project" - Create new repo
-  - "latest commit" - View recent commit
-- **Git Operations**: Local git automation
-  - "git status" - Check repo status
-  - "git push" / "git pull" - Sync with remote
-  - "commit and push with message [msg]" - Quick workflow
-  - "list branches" - Show all branches
-
-### 🔧 Current Capabilities
-- Natural conversation with context awareness
-- Code assistance and explanations
-- Model switching for different tasks
-- Session monitoring with fatigue warnings
-- Mac system control and automation
-- Productivity workflows and focus sessions
+### � Productivity
+- **Smart Focus Mode**: Blocks distractions for set duration
+- **GitHub Integration**: Manage repos, push/pull code via voice
+- **Scheduling**: Reminders and recurring daily tasks
+- **Command Logging**: Tracks usage history
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- macOS (for TTS)
-- Python 3.8+
-- [Ollama](https://ollama.ai/) installed and running
+- macOS (Required for system control integration)
+- Python 3.10+
+- [Ollama](https://ollama.ai/) installed
+- [ffmpeg](https://ffmpeg.org/) (for audio processing)
 
 ### Installation
 
@@ -83,99 +79,58 @@ ollama serve
 
 ### Usage
 
-**Quick Launch (Recommended)**
-```bash
-./jarvis.sh
-```
-
-**Text Mode**
+**Launch JARVIS (Text Mode)**
 ```bash
 python main.py
 ```
 
-**Voice Mode (Free - No API Key)**
+**Launch JARVIS (Voice Mode)** 🎙️
 ```bash
 python main.py --voice
 ```
+_Press SPACE/ENTER to start talking. Press again to stop._
 
-**Voice Mode with Porcupine (Optional)**
-```bash
-export PICOVOICE_ACCESS_KEY="your-key-here"
-python main.py --voice
-```
+## 🎮 Command Guide
 
-## 🎮 Commands
+### ☀️ Morning & Daily
+| Command | Action |
+|---------|--------|
+| "Start my day" | Runs Morning Briefing Protocol |
+| "Morning briefing" | Weather, News, System Status |
+| "What's the update" | Quick status check |
 
-### Core Commands
-| Command | Description |
-|---------|-------------|
-| `switch to coding mode` | Use qwen2.5-coder for programming |
-| `switch to research mode` | Use deepseek-r1 for deep reasoning |
-| `switch to general mode` | Use mistral for conversation |
-| `what mode` | Check current model |
-| `my name is [name]` | Teach JARVIS your name |
-| `remember [fact]` | Save important information |
-| `forget that` | Clear custom memories |
-| `clear history` | Wipe conversation history |
-| `exit` / `quit` | Exit JARVIS |
+### 🧭 App Navigation
+| Command | Action |
+|---------|--------|
+| "Open [App]" | Launch any application |
+| "Close [App]" | Quit an application |
+| "Search Google for [X]" | Opens browser with search results |
+| "Search YouTube for [X]" | Opens YouTube video directly |
+| "Go to [website.com]" | Navigates to specific URL |
 
-### Mac Control
-| Command | Description |
-|---------|-------------|
-| `open [app]` / `launch [app]` | Open an application |
-| `close [app]` / `quit [app]` | Close an application |
-| `open [app] and launch [app]` | Open multiple apps |
-| `set volume to [0-100]` | Set system volume |
-| `volume up` / `volume down` | Adjust volume |
-| `mute` / `max volume` | Quick volume presets |
-| `set brightness to [0-100]` | Set display brightness |
-| `brightness up` / `brightness down` | Adjust brightness |
+### 🎵 Media Control (Spotify)
+| Command | Action |
+|---------|--------|
+| "Play [Song Name]" | Search and play song |
+| "Play [Song] by [Artist]" | Specific track playback |
+| "Pause" / "Resume" | Toggle playback |
+| "Next track" | Skip song |
+| "Volume [0-100]" | Set system volume |
 
-### Productivity
-| Command | Description |
-|---------|-------------|
-| `focus mode for [X] hours/minutes` | Start focus session |
-| `end focus` / `stop focus` | End focus session |
-| "focus mode for [X] hours" | Start focus session |
-| "end focus" | Stop focus mode |
-| "prepare for coding" | Launch coding workflow |
-| "prepare for research" | Launch research workflow |
-| "remind me in [X] minutes" | Set reminder |
-| "every day at [time] [action]" | Set recurring task |
-| "list scheduled" | Show all scheduled tasks |
-| "show my settings" | Display preferences |
-| "set default volume to [X]" | Save volume preference |
+### 💻 GitHub & Coding
+| Command | Action |
+|---------|--------|
+| "Show my repos" | List GitHub repositories |
+| "Create repo [name]" | Create new public repo |
+| "Commit and push" | Stage, commit, and push |
+| "Switch to coding mode" | Activate specialized coding model |
 
-### GitHub & Git
-| Command | Description |
-|---------|-------------|
-| `show my repos` / `list my repos` | List your GitHub repositories |
-| `create repo [name]` | Create new GitHub repository |
-| `latest commit` / `last commit` | Show most recent commit |
-| `git status` / `repo status` | Check repository status |
-| `git push` / `push changes` | Push to remote |
-| `git pull` / `pull changes` | Pull from remote |
-| `commit and push` | Quick add, commit, and push |
-| `commit and push with message [msg]` | Custom commit message |
-| `list branches` / `show branches` | Show all branches |
-
-### Settings & Analytics
-| Command | Description |
-|---------|-------------|
-| `set my default volume to [X]` | Save volume preference |
-| `set my default mode to [mode]` | Save mode preference |
-| `show my settings` | Display saved preferences |
-| `show command history` | View recent commands |
-
-### Scheduling & Reminders
-| Command | Description |
-|---------|-------------|
-| `remind me in [X] minutes/hours` | Set one-time reminder |
-| `remind me in [X] minutes to [message]` | Reminder with custom message |
-| `every day at [time] open [app]` | Daily recurring task |
-| `list scheduled` / `my reminders` | Show all scheduled tasks |
-| `cancel reminder` / `cancel task` | Cancel most recent task |
-
+### 🧠 Memory & Utility
+| Command | Action |
+|---------|--------|
+| "Remind me in [X] mins" | Set a timer/reminder |
+| "Remember [fact]" | Store info in long-term memory |
+| "Focus mode for [X] hours" | Block distractions |
 
 ## 📁 Project Structure
 
@@ -183,31 +138,20 @@ python main.py --voice
 Jarvis_AI_Antigravity/
 ├── src/
 │   ├── core/
-│   │   ├── agent.py          # Main agent logic
-│   │   ├── llm.py             # Ollama client
-│   │   ├── memory.py          # Conversation & preferences
-│   │   ├── personality.py     # JARVIS personality system
-│   │   ├── mac_control.py     # macOS system control
-│   │   ├── focus_mode.py      # Focus mode system
-│   │   ├── workflows.py       # Workflow executor
-│   │   ├── voice_io.py        # STT/TTS
-│   │   ├── wake_word.py       # Porcupine integration
-│   │   └── simple_wake.py     # Free wake detection
-│   ├── config/
-│   │   └── config.py          # Configuration
-│   └── main.py                # Entry point
-├── tests/
-│   ├── test_model_switching.py
-│   ├── test_mac_control.py
-│   └── test_close_app.py
-├── data/                      # Persistent storage (gitignored)
-│   ├── conversation_history.json
-│   ├── preferences.json
-│   └── command_history.json
-├── jarvis.sh                  # Quick launch script
-├── activate.sh                # Venv activation helper
-├── requirements.txt
-└── README.md
+│   │   ├── agent.py          # Main brain & event loop
+│   │   ├── personality_v2.py # Context-aware personality engine
+│   │   ├── voice_io.py       # ElevenLabs TTS + Whisper STT
+│   │   ├── keyboard_wake.py  # Push-to-talk system
+│   │   └── mac_control.py    # System integration
+│   ├── features/
+│   │   └── morning_briefing.py # Daily briefing logic
+│   ├── integrations/
+│   │   ├── app_navigator.py  # App control router
+│   │   ├── browser_controller.py # Web automation
+│   │   ├── spotify_controller.py # Spotify AppleScript control
+│   │   └── intent_detector.py # LLM-based intent parser
+│   └── config/
+└── main.py                   # Entry point
 ```
 
 ## 🛣️ Roadmap
@@ -227,19 +171,18 @@ See [task.md](https://github.com/akiii-py/Jarvis-AI/blob/main/.gemini/antigravit
 
 ## 🤝 Contributing
 
-This is a personal project, but suggestions and feedback are welcome! Feel free to open issues or submit pull requests.
+This is a personal project, but suggestions are welcome!
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT License.
 
 ## 🙏 Acknowledgments
 
-- Inspired by JARVIS from the Marvel Cinematic Universe
-- Built with [Ollama](https://ollama.ai/)
-- Powered by open-source LLMs (Qwen, DeepSeek, Mistral)
-- Voice detection by [Picovoice Porcupine](https://picovoice.ai/)
-- Speech recognition by [OpenAI Whisper](https://github.com/openai/whisper)
+- **Marvel Studios** for the inspiration
+- **Ollama** for local LLM power
+- **ElevenLabs** for the incredible voice
+- **Picovoice & OpenAI** for audio tech
 
 ## ⚠️ Disclaimer
 

@@ -9,6 +9,10 @@ class LLMClient:
         self.base_url = Config.OLLAMA_BASE_URL
         self.model = model
 
+    def set_model(self, model: str):
+        """Update the model used for generation."""
+        self.model = model
+
     def chat(self, messages: List[Dict[str, str]], stream: bool = True, use_jarvis_personality: bool = True, custom_memories: List[str] = None, current_mode: str = None) -> Generator[str, None, None]:
         """
         Sends a chat request to the Ollama API.

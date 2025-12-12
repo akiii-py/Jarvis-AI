@@ -4,6 +4,7 @@ from src.core.voice_io import VoiceInput, VoiceOutput
 from src.core.wake_word import WakeWordListener
 from src.core.personality_v2 import JarvisPersonalityV2 as JarvisPersonality
 from src.features.morning_briefing import MorningBriefing
+from src.features.research_agent import ResearchAgent
 from src.core.mac_control import MacController
 from src.core.focus_mode import FocusMode
 from src.core.workflows import WorkflowExecutor
@@ -37,6 +38,14 @@ class Jarvis:
         
         self.llm = LLMClient()
         self.current_mode = self.settings.get("default_mode", "general")
+        
+        # Ensure LLM model matches the loaded mode
+        if self.current_mode in Config.MODEL_PROFILES:
+            target_model = Config.MODEL_PROFILES[self.current_mode]
+            self.llm.set_model(target_model)
+        else:
+            target_model = Config.DEFAULT_MODEL
+            
         self.session_start_time = None
         self.interaction_count = 0
         self.mac_control = MacController(allowed_apps=Config.ALLOWED_APPS)
@@ -49,7 +58,6 @@ class Jarvis:
         # Focus mode
         self.focus_mode: Optional[FocusMode] = None
         
-
         # Workflow executor
         self.workflows = WorkflowExecutor(self)
         
@@ -72,10 +80,13 @@ class Jarvis:
         # Morning Briefing
         self.morning_briefing = MorningBriefing()
         
+        # Research Agent
+        self.research_agent = ResearchAgent(self.llm)
+        
         # Don't apply settings on startup - only when user explicitly requests
         # Settings are saved and can be applied on demand
         
-        print(f"Jarvis initialized with model: {Config.DEFAULT_MODEL}")
+        print(f"Jarvis initialized with model: {target_model}")
         print(f"Current mode: {self.current_mode}")
         print(f"Settings loaded: Volume={self.settings.get('preferred_volume')}%, Mode={self.current_mode}")
 
@@ -86,7 +97,7 @@ class Jarvis:
             print(f"Unknown mode: {mode}. Available: {list(Config.MODEL_PROFILES.keys())}")
             return False
         
-        new_model = Config.MODEL_PROFILES[mode]["model"]
+        new_model = Config.MODEL_PROFILES[mode]
         self.llm.set_model(new_model)
         old_mode = self.current_mode
         self.current_mode = mode
@@ -233,6 +244,31 @@ class Jarvis:
         """
         self.logger.debug(f"Processing input: {user_input}")
         lower_input = user_input.lower().strip()
+        
+        # ============================================================================
+        # MORNING BRIEFING - PRIORITY 0 (Check before app control!)
+        # ============================================================================
+        if "start my day" in lower_input or "morning briefing" in lower_input or "wake up protocol" in lower_input:
+             print("☀️ Generating morning briefing...")
+             briefing = self.morning_briefing.generate_briefing()
+             return True, briefing
+
+        # ============================================================================
+        # RESEARCH AGENT COMMANDS
+        # ============================================================================
+        # This section assumes an intent detection mechanism has already identified "RESEARCH_TOPIC"
+        # and extracted the topic. For this specific instruction, we'll add a direct check
+        # for "research" in the input as a placeholder, but ideally this would be driven by an LLM intent.
+        if "research" in lower_input and ("on" in lower_input or "about" in lower_input):
+            # Simple extraction for demonstration; a real system would use LLM for this
+            topic_match = re.search(r'research (?:on|about)\s+(.+)', lower_input)
+            if topic_match:
+                topic = topic_match.group(1).strip()
+                print(f"🕵️‍♂️ Starting research on: {topic}")
+                response = self.research_agent.conduct_research(topic)
+                return True, response
+            else:
+                return True, "Please specify a topic for research, sir."
         
         # ============================================================================
         # FOCUS MODE COMMANDS - PRIORITY 0 (Check before app control!)

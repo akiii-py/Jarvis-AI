@@ -793,7 +793,7 @@ class Jarvis:
                 custom_memories = self.memory.preferences.get("custom_memories", [])
                 
                 # Stream the response
-                for chunk in self.llm.chat(self.memory.get_history(), custom_memories=custom_memories):
+                for chunk in self.llm.chat(self.memory.get_history(), custom_memories=custom_memories, current_mode=self.current_mode):
                     print(chunk, end="", flush=True)
                     full_response += chunk
                 

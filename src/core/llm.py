@@ -63,10 +63,11 @@ Would you like me to switch modes?"
 ═══════════════════════════════════════════════════════════════
 """
                 system_content += mode_info
+                print(f"[DEBUG] Mode awareness injected: {current_mode}")  # Debug
             
             # Add custom memories if provided
             if custom_memories:
-                memory_text = "\n\nIMPORTANT FACTS TO REMEMBER:\n" + "\n".join(f"- {mem}" for mem in custom_memories)
+                memory_text = "\n\nIMPORTANT FACTS TO REMEMBER:\n" + "\n.join(f"- {mem}" for mem in custom_memories)
                 system_content += memory_text
             
             messages = [

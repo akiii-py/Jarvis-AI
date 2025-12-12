@@ -30,12 +30,12 @@ class Jarvis:
         self.settings = self.memory.preferences.get("default_settings", {
             "preferred_volume": 50,
             "preferred_brightness": 75,
-            "default_mode": "coding",
+            "default_mode": "general",
             "user_name": "Sir"
         })
         
         self.llm = LLMClient()
-        self.current_mode = self.settings.get("default_mode", "coding")
+        self.current_mode = self.settings.get("default_mode", "general")
         self.session_start_time = None
         self.interaction_count = 0
         self.mac_control = MacController(allowed_apps=Config.ALLOWED_APPS)

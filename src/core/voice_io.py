@@ -130,15 +130,16 @@ class VoiceOutput:
                 print(f"⚠️  ElevenLabs initialization failed: {e}, using macOS say")
                 self.use_elevenlabs = False
     
-    def speak(self, text: str, voice_id: str = "pNInz6obpgDQGcFmaJgB") -> bool:
+    def speak(self, text: str, voice_id: str = "VHlcT3SbwGWyUw1IEjnd") -> bool:
         """
         Speak the given text.
         
         Args:
             text: Text to speak
             voice_id: ElevenLabs voice ID 
-                     (default: Adam - British male voice)
-                     Other options:
+                     (default: Custom JARVIS voice)
+                     Other popular options:
+                     - "pNInz6obpgDQGcFmaJgB" - Adam (British male, professional)
                      - "onwK4e9ZLuTAKqWW03F9" - Daniel (British, deep)
                      - "pMsXgVXv3BLzUgSXRplE" - Charlie (British, casual)
         

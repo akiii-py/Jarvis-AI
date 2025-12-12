@@ -97,7 +97,7 @@ Possible intents:
 - GOOGLE_SEARCH: Searching Google
 - WHATSAPP_MESSAGE: Sending a message via WhatsApp
 - EMAIL_SEARCH: Searching emails in Mail app
-- WEBSITE_VISIT: Opening a website
+- WEBSITE_VISIT: Opening a website or browser with specific URL
 - GENERAL_CHAT: General conversation (not app-related)
 - UNKNOWN: Can't determine intent
 
@@ -108,12 +108,15 @@ Extract data intelligently:
 - For WHATSAPP_MESSAGE: Extract contact name and message
 - For YOUTUBE_SEARCH: Extract what to search for
 - For GOOGLE_SEARCH: Extract search query
-- For WEBSITE_VISIT: Extract website URL
+- For WEBSITE_VISIT: Extract website URL or site name
 
 Examples:
 - "open calculator" → APP_OPEN, app: "Calculator"
 - "launch notes" → APP_OPEN, app: "Notes"
 - "open safari" → APP_OPEN, app: "Safari"
+- "open safari and search youtube.com" → WEBSITE_VISIT, website: "youtube.com"
+- "open chrome and go to google.com" → WEBSITE_VISIT, website: "google.com"
+- "go to youtube.com" → WEBSITE_VISIT, website: "youtube.com"
 - "play lo-fi beats" → SPOTIFY_PLAY, query: "lo-fi beats"
 - "play back in black on spotify" → SPOTIFY_PLAY, query: "back in black"
 - "play rakhlo tum chupaake from spotify" → SPOTIFY_PLAY, query: "rakhlo tum chupaake"

@@ -109,9 +109,9 @@ Extract data intelligently:
 - For SPOTIFY_CONTROL: Extract action (pause, resume, next, previous, current)
 - For WHATSAPP_MESSAGE: Extract contact name and message
 - For YOUTUBE_SEARCH: Extract what to search for
-- For GOOGLE_SEARCH: Extract search query
+- For GOOGLE_SEARCH: ONLY if user explicitly says "google X" or "open browser". Extract query.
 - For WEBSITE_VISIT: Extract website URL or site name
-- For RESEARCH_TOPIC: Extract the topic to research
+- For RESEARCH_TOPIC: DEFAULT for "search", "find", "who is", "what is". Extract topic.
 - For MORNING_BRIEFING: No extraction needed
 
 Examples:
@@ -119,28 +119,23 @@ Examples:
 - "launch notes" → APP_OPEN, app: "Notes"
 - "open safari" → APP_OPEN, app: "Safari"
 - "open safari and search youtube.com" → WEBSITE_VISIT, website: "youtube.com"
-- "open chrome and go to google.com" → WEBSITE_VISIT, website: "google.com"
 - "go to youtube.com" → WEBSITE_VISIT, website: "youtube.com"
 - "i want to work on a new project" → GENERAL_CHAT
 - "start my day" → MORNING_BRIEFING
-- "morning briefing" → MORNING_BRIEFING
-- "what's the update for today" → MORNING_BRIEFING
-- "wake up protocol" → MORNING_BRIEFING
-- "research quantum computing" → RESEARCH_TOPIC, topic: "quantum computing"
-- "find information about spacex starship" → RESEARCH_TOPIC, topic: "spacex starship"
-- "look up how to build a neural network" → RESEARCH_TOPIC, topic: "how to build a neural network"
+- "search for quantum computing" → RESEARCH_TOPIC, topic: "quantum computing"
+- "find info on spacex" → RESEARCH_TOPIC, topic: "spacex"
+- "who is iron man" → RESEARCH_TOPIC, topic: "iron man"
+- "what is a neural network" → RESEARCH_TOPIC, topic: "neural network"
 - "give me a report on the french revolution" → RESEARCH_TOPIC, topic: "french revolution"
-- "give me some ideas" → GENERAL_CHAT
-- "tell me a joke" → GENERAL_CHAT
+- "latest football news" → RESEARCH_TOPIC, topic: "latest football news"
+- "google dsa" → GOOGLE_SEARCH, query: "dsa"
+- "open google and search python" → GOOGLE_SEARCH, query: "python"
+- "search amazon on browser" → GOOGLE_SEARCH, query: "amazon"
 - "play lo-fi beats" → SPOTIFY_PLAY, query: "lo-fi beats"
 - "play back in black on spotify" → SPOTIFY_PLAY, query: "back in black"
-- "play rakhlo tum chupaake from spotify" → SPOTIFY_PLAY, query: "rakhlo tum chupaake"
-- "yo put on some lofi" → SPOTIFY_PLAY, query: "lofi"
 - "pause" → SPOTIFY_CONTROL, action: "pause"
-- "what's playing" → SPOTIFY_CONTROL, action: "current"
 - "message john saying hey" → WHATSAPP_MESSAGE, contact: "john", message: "hey"
 - "search python on youtube" → YOUTUBE_SEARCH, query: "python"
-- "google dsa" → GOOGLE_SEARCH, query: "dsa"
 - "what time is it" → GENERAL_CHAT
 
 Respond with ONLY this JSON structure:
@@ -178,7 +173,7 @@ Respond with ONLY this JSON structure:
                 "SPOTIFY_PLAY", "SPOTIFY_CONTROL",
                 "YOUTUBE_SEARCH", "GOOGLE_SEARCH",
                 "WHATSAPP_MESSAGE", "EMAIL_SEARCH",
-                "WEBSITE_VISIT"
+                "WEBSITE_VISIT", "RESEARCH_TOPIC"
             }
             
             is_app_command = intent_type in app_commands and confidence >= 0.7

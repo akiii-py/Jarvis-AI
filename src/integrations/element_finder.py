@@ -83,7 +83,8 @@ class AccessibilityHelper:
             return False
         
         try:
-            subprocess.run(['osascript', '-e', f'keystroke "{mapped_key}"'], timeout=1)
+            # Must wrap in System Events for it to work globally
+            subprocess.run(['osascript', '-e', f'tell application "System Events" to keystroke "{mapped_key}"'], timeout=1)
             return True
         except Exception as e:
             print(f"Error pressing key: {e}")
@@ -94,7 +95,7 @@ class AccessibilityHelper:
         """Press key with modifiers (Cmd, Option, Shift)."""
         try:
             mod_string = ', '.join(f'{m} down' for m in modifiers)
-            script = f'keystroke "{key}" using {{{mod_string}}}'
+            script = f'tell application "System Events" to keystroke "{key}" using {{{mod_string}}}'
             subprocess.run(['osascript', '-e', script], timeout=1)
             return True
         except Exception as e:

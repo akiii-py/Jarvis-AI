@@ -588,7 +588,7 @@ class Jarvis:
             response = JarvisPersonality.get_success_response("with_pride")
             return (True, f"{response} Switched to general mode, sir.")
         
-        elif "what mode" in lower_input or "current mode" in lower_input:
+        elif "what mode" in lower_input or "current mode" in lower_input or "which mode" in lower_input:
             return (True, f"Currently in {self.current_mode} mode using {self.llm.model}, sir.")
         
         # ============================================================================

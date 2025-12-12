@@ -31,18 +31,22 @@ class VoiceInput:
         self.model = whisper.load_model(model_size)
         self.audio = pyaudio.PyAudio()
     
-    def record_audio(self, duration: int = 5, sample_rate: int = 16000) -> str:
+    def record_audio(self, sample_rate: int = 16000) -> str:
         """
-        Record audio from microphone.
+        Record audio from microphone until stopped by user.
         
         Args:
-            duration: Recording duration in seconds
             sample_rate: Audio sample rate
             
         Returns:
             Path to recorded audio file
         """
-        print("🎤 Listening...")
+        print("🎤 Listening... (Press SPACE/ENTER to stop)")
+        
+        # Set up keyboard monitoring
+        import sys, select, termios, tty
+        old_settings = termios.tcgetattr(sys.stdin)
+        tty.setcbreak(sys.stdin.fileno())
         
         stream = self.audio.open(
             format=pyaudio.paInt16,
@@ -53,12 +57,23 @@ class VoiceInput:
         )
         
         frames = []
-        for _ in range(0, int(sample_rate / 1024 * duration)):
-            data = stream.read(1024)
-            frames.append(data)
-        
-        stream.stop_stream()
-        stream.close()
+        try:
+            while True:
+                # Read audio chunk
+                data = stream.read(1024, exception_on_overflow=False)
+                frames.append(data)
+                
+                # Check for keypress to stop
+                if select.select([sys.stdin], [], [], 0)[0]:
+                    key = sys.stdin.read(1)
+                    if key in [' ', '\n', '\r', 'q']:
+                        print("\n✅ Stopped listening.")
+                        break
+                        
+        finally:
+            stream.stop_stream()
+            stream.close()
+            termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
         
         # Save to temporary file
         temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.wav')
@@ -84,17 +99,14 @@ class VoiceInput:
         result = self.model.transcribe(audio_file)
         return result["text"].strip()
     
-    def listen(self, duration: int = 5) -> str:
+    def listen(self) -> str:
         """
         Record and transcribe audio.
         
-        Args:
-            duration: Recording duration in seconds
-            
         Returns:
             Transcribed text
         """
-        audio_file = self.record_audio(duration)
+        audio_file = self.record_audio()
         print("🧠 Processing...")
         text = self.transcribe(audio_file)
         
@@ -175,8 +187,8 @@ class VoiceOutput:
                         temp_file.write(chunk)
                 temp_file.close()
                 
-                # Play audio using afplay (macOS)
-                subprocess.run(['afplay', temp_file.name], check=True)
+                # Play audio using afplay (macOS) with interrupt capability
+                self.play_audio_file(temp_file.name)
                 
                 # Clean up
                 os.unlink(temp_file.name)
@@ -190,6 +202,30 @@ class VoiceOutput:
         else:
             # Use macOS say command
             return self._speak_macos(text)
+            
+    def play_audio_file(self, file_path: str):
+        """Play audio file with interrupt capability."""
+        # Use simple playback but check for interruption
+        import sys, select, termios, tty
+        
+        try:
+            # Start playback process
+            process = subprocess.Popen(['afplay', file_path])
+            
+            # Monitor for keypress to interrupt
+            old_settings = termios.tcgetattr(sys.stdin)
+            tty.setcbreak(sys.stdin.fileno())
+            
+            while process.poll() is None:
+                if select.select([sys.stdin], [], [], 0.1)[0]:
+                    key = sys.stdin.read(1)
+                    # Any key interrupts
+                    if key:
+                        process.terminate()
+                        print("\n🛑 Interrupted.")
+                        break
+        finally:
+            termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
     
     def _speak_macos(self, text: str) -> bool:
         """

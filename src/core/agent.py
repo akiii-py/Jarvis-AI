@@ -747,7 +747,7 @@ class Jarvis:
                     
                     # Listen for voice command
                     try:
-                        user_input = self.voice_input.listen(duration=5)
+                        user_input = self.voice_input.listen()
                         print(f"\n💬 You said: {user_input}")
                     except Exception as e:
                         print(f"❌ Voice input error: {e}")

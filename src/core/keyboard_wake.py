@@ -36,7 +36,8 @@ class KeyboardWakeListener:
             self.old_settings = termios.tcgetattr(sys.stdin)
             tty.setcbreak(sys.stdin.fileno())
             
-            print("\n⏸️  Press SPACE or ENTER to activate JARVIS...")
+            print("\n⏸️  Press SPACE or ENTER to start listening...")
+            print("   Press SPACE or ENTER again to stop listening.")
             
             while True:
                 # Check if input is available
@@ -45,7 +46,7 @@ class KeyboardWakeListener:
                     
                     # Space or Enter activates
                     if key in [' ', '\n', '\r']:
-                        print("✅ Activated! Listening...")
+                        print("✅ Listening started... (Press again to stop)")
                         return True
                     
                     # 'q' quits

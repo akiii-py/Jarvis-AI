@@ -28,7 +28,11 @@ class SpotifyController:
             return False
     
     def search_and_play(self, query: str) -> bool:
-        """Search Spotify and play first song result (not playlist)."""
+        """
+        Search Spotify and play the track directly (not in playlist context).
+        
+        Uses Spotlight URL scheme to play individual track, preventing playlist auto-play.
+        """
         try:
             if not self.open_spotify():
                 return False
@@ -37,28 +41,66 @@ class SpotifyController:
             self.accessibility.activate_app("Spotify")
             time.sleep(0.5)
             
-            # Use AppleScript to search and navigate to Songs section
+            # Method 1: Use Spotify's search and play directly via AppleScript
+            # This plays the song individually, not in a playlist context
+            script = f'''
+            tell application "Spotify"
+                activate
+                
+                -- Play the track by searching
+                play track "spotify:search:{query.replace('"', '\\"')}"
+            end tell
+            '''
+            
+            try:
+                subprocess.run(['osascript', '-e', script], timeout=5, check=True)
+                time.sleep(1)
+                return True
+            except:
+                # Fallback to UI navigation method
+                print("Direct play failed, trying UI navigation...")
+                return self._ui_search_and_play(query)
+            
+        except Exception as e:
+            print(f"Spotify search error: {e}")
+            return False
+    
+    def _ui_search_and_play(self, query: str) -> bool:
+        """
+        Fallback method: Use UI navigation to search and play.
+        Tries to select from Songs section to avoid playlist context.
+        """
+        try:
+            # Type the query character by character with delay to ensure it all gets typed
+            escaped_query = query.replace('"', '\\"')
+            
             script = f'''
             tell application "System Events"
                 tell process "Spotify"
                     -- Open search with Cmd+K
                     keystroke "k" using command down
-                    delay 0.8
+                    delay 1.0
                     
-                    -- Type the search query
-                    keystroke "{query}"
-                    delay 1.5
+                    -- Clear any existing search
+                    keystroke "a" using command down
+                    delay 0.2
+                    key code 51
+                    delay 0.3
+                    
+                    -- Type the search query slowly
+                    keystroke "{escaped_query}"
+                    delay 2.0
                     
                     -- Press return to search
                     keystroke return
-                    delay 1.2
+                    delay 1.5
                     
-                    -- Arrow down multiple times to get past playlists to songs
-                    -- Spotify typically shows: Top Result, Playlists, then Songs
+                    -- Arrow down to first song result
+                    -- Skip the "Top Result" which might be a playlist
                     key code 125
-                    delay 0.2
+                    delay 0.3
                     key code 125
-                    delay 0.2
+                    delay 0.3
                     key code 125
                     delay 0.3
                     
@@ -68,14 +110,11 @@ class SpotifyController:
             end tell
             '''
             
-            subprocess.run(['osascript', '-e', script], timeout=10, check=True)
+            subprocess.run(['osascript', '-e', script], timeout=15, check=True)
             return True
             
-        except subprocess.CalledProcessError as e:
-            print(f"Spotify search AppleScript error: {e}")
-            return False
         except Exception as e:
-            print(f"Spotify search error: {e}")
+            print(f"UI navigation error: {e}")
             return False
     
     def pause(self) -> bool:

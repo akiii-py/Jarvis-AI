@@ -115,6 +115,8 @@ Examples:
 - "launch notes" → APP_OPEN, app: "Notes"
 - "open safari" → APP_OPEN, app: "Safari"
 - "play lo-fi beats" → SPOTIFY_PLAY, query: "lo-fi beats"
+- "play back in black on spotify" → SPOTIFY_PLAY, query: "back in black"
+- "play rakhlo tum chupaake from spotify" → SPOTIFY_PLAY, query: "rakhlo tum chupaake"
 - "yo put on some lofi" → SPOTIFY_PLAY, query: "lofi"
 - "pause" → SPOTIFY_CONTROL, action: "pause"
 - "what's playing" → SPOTIFY_CONTROL, action: "current"

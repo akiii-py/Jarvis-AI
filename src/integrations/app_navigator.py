@@ -16,12 +16,20 @@ class AppNavigator:
     """Master controller for all app navigation and automation with LLM-powered intent detection."""
     
     def __init__(self, mac_control, personality, llm_client):
+        """
+        Initialize AppNavigator
+        
+        Args:
+            mac_control: MacController for system operations
+            personality: JARVIS personality for responses
+            llm_client: LLM client for intent detection
+        """
         self.mac_control = mac_control
         self.personality = personality
         
-        # Initialize controllers
+        # Initialize sub-controllers
         self.spotify = SpotifyController(mac_control)
-        self.browser = BrowserController(mac_control)
+        self.browser = BrowserController(mac_control, browser="Safari")  # Use Safari as default
         self.automator = AppAutomator(mac_control)
         
         # Initialize LLM-powered intent detector

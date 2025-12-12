@@ -496,7 +496,7 @@ class Jarvis:
             # Always respond with personality, regardless of success
             if open_success:
                 context = self.get_contextual_personality()
-                ack = JarvisPersonality.get_acknowledgment_for_context(context)
+                ack = self.personality.get_acknowledgment()
                 return (True, ack)
             else:
                 return (True, f"I'm afraid I couldn't locate {app_name}, sir.")

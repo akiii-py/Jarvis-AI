@@ -154,6 +154,7 @@ Respond with ONLY this JSON structure:
             
             # Determine if this is an app command
             app_commands = {
+                "APP_OPEN",
                 "SPOTIFY_PLAY", "SPOTIFY_CONTROL",
                 "YOUTUBE_SEARCH", "GOOGLE_SEARCH",
                 "WHATSAPP_MESSAGE", "EMAIL_SEARCH",

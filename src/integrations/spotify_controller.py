@@ -35,30 +35,40 @@ class SpotifyController:
             
             time.sleep(0.5)
             self.accessibility.activate_app("Spotify")
-            time.sleep(0.3)
-            
-            # Cmd+K opens search
-            subprocess.run(['osascript', '-e', 'keystroke "k" using command down'], timeout=1)
             time.sleep(0.5)
             
-            # Type search query
-            self.accessibility.type_text(query, delay=0.03)
-            time.sleep(1)
-            
-            # Press Enter to search
-            self.accessibility.press_key("return")
-            time.sleep(1)
-            
-            # Select first result and play
-            subprocess.run(['osascript', '-e', '''
-                tell application "System Events"
+            # Use AppleScript to search and play
+            script = f'''
+            tell application "System Events"
+                tell process "Spotify"
+                    -- Open search with Cmd+K
+                    keystroke "k" using command down
+                    delay 0.5
+                    
+                    -- Type the search query
+                    keystroke "{query}"
+                    delay 1
+                    
+                    -- Press return to search
+                    keystroke return
+                    delay 1
+                    
+                    -- Arrow down to first result
                     key code 125
                     delay 0.3
-                    key code 36
+                    
+                    -- Press return to play
+                    keystroke return
                 end tell
-            '''], timeout=2)
+            end tell
+            '''
             
+            subprocess.run(['osascript', '-e', script], timeout=5, check=True)
             return True
+            
+        except subprocess.CalledProcessError as e:
+            print(f"Spotify search AppleScript error: {e}")
+            return False
         except Exception as e:
             print(f"Spotify search error: {e}")
             return False

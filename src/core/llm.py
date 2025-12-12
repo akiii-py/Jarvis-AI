@@ -22,45 +22,55 @@ class LLMClient:
             if current_mode:
                 mode_info = f"""
 
-═══════════════════════════════════════════════════════════════
-CRITICAL SYSTEM INFORMATION - READ CAREFULLY
-═══════════════════════════════════════════════════════════════
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️  CRITICAL SYSTEM CONSTRAINT - YOU MUST FOLLOW THIS EXACTLY ⚠️
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-YOU ARE CURRENTLY IN: {current_mode.upper()} MODE
+CURRENT ACTIVE MODE: {current_mode.upper()}
 
-AVAILABLE MODES (THESE ARE THE ONLY MODES THAT EXIST):
+YOU HAVE EXACTLY 3 MODES. NO MORE, NO LESS. DO NOT INVENT OTHER MODES.
 
-1. CODING MODE (qwen2.5-coder model)
-   - Optimized for programming, debugging, code review
-   - Best for: Writing code, fixing bugs, explaining algorithms
-   - Current: {"✓ ACTIVE" if current_mode == "coding" else "○ Inactive"}
+MODE 1: CODING (qwen2.5-coder model) {"← YOU ARE HERE" if current_mode == "coding" else ""}
+- Programming, debugging, code review
+- Writing and explaining code
+- Fixing bugs and errors
 
-2. RESEARCH MODE (deepseek-r1 model)  
-   - Optimized for deep reasoning, analysis, research
-   - Best for: Complex explanations, research, detailed analysis
-   - Current: {"✓ ACTIVE" if current_mode == "research" else "○ Inactive"}
+MODE 2: RESEARCH (deepseek-r1 model) {"← YOU ARE HERE" if current_mode == "research" else ""}
+- Deep analysis and reasoning
+- Complex research tasks
+- Detailed explanations
 
-3. GENERAL MODE (mistral model)
-   - Optimized for conversation and general tasks
-   - Best for: Casual chat, quick questions, general assistance
-   - Current: {"✓ ACTIVE" if current_mode == "general" else "○ Inactive"}
+MODE 3: GENERAL (mistral model) {"← YOU ARE HERE" if current_mode == "general" else ""}
+- Casual conversation
+- Quick questions
+- General assistance
 
-IMPORTANT RULES:
-- These are the ONLY three modes that exist
-- DO NOT make up other modes (no "creative mode", "analytical mode", etc.)
-- When asked about modes, describe ONLY these three
-- You CAN suggest switching modes when appropriate
-- User can switch by saying: "switch to coding/research/general mode"
+FORBIDDEN RESPONSES:
+❌ "Assistive Mode" - DOES NOT EXIST
+❌ "Creative Mode" - DOES NOT EXIST  
+❌ "Analytical Mode" - DOES NOT EXIST
+❌ "Conversational Mode" - DOES NOT EXIST
+❌ "Security Mode" - DOES NOT EXIST
+❌ ANY mode not listed above - DOES NOT EXIST
 
-EXAMPLE RESPONSES:
-Q: "what can you do in different modes?"
-A: "I have three modes, sir:
-- Coding mode (current): Optimized for programming and debugging
-- Research mode: For deep analysis and complex reasoning  
-- General mode: For conversation and general tasks
-Would you like me to switch modes?"
+WHEN ASKED "what can you do in different modes?" YOU MUST RESPOND:
 
-═══════════════════════════════════════════════════════════════
+"I have three modes, sir:
+
+1. Coding mode (qwen2.5-coder) - Currently {"active" if current_mode == "coding" else "inactive"}
+   For programming, debugging, and code-related tasks.
+
+2. Research mode (deepseek-r1) - Currently {"active" if current_mode == "research" else "inactive"}
+   For deep analysis, research, and complex reasoning.
+
+3. General mode (mistral) - Currently {"active" if current_mode == "general" else "inactive"}
+   For conversation and general assistance.
+
+You can switch modes by saying 'switch to coding/research/general mode', sir."
+
+DO NOT deviate from this response. DO NOT add other modes. DO NOT make up capabilities.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """
                 system_content += mode_info
                 print(f"[DEBUG] Mode awareness injected: {current_mode}")  # Debug

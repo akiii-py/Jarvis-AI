@@ -486,7 +486,7 @@ class Jarvis:
                         responses.append(f"closed {app_name}")
             
             if responses:
-                ack = JarvisPersonality.get_acknowledgment()
+                ack = self.personality.get_acknowledgment()
                 return (True, f"{ack} I've {' and '.join(responses)}, sir.")
         
         # Open/Launch App Command
@@ -506,7 +506,7 @@ class Jarvis:
         if success:
             close_success, message = self.mac_control.close_app(app_name)
             if close_success:
-                ack = JarvisPersonality.get_acknowledgment()
+                ack = self.personality.get_acknowledgment()
                 return (True, ack)
             else:
                 return (True, f"I'm afraid I couldn't close {app_name}, sir.")
@@ -517,11 +517,11 @@ class Jarvis:
         
         if "volume up" in lower_input or "increase volume" in lower_input:
             success, message = self.mac_control.adjust_volume("up")
-            return (True, message or JarvisPersonality.get_acknowledgment())
+            return (True, message or self.personality.get_acknowledgment())
         
         elif "volume down" in lower_input or "decrease volume" in lower_input:
             success, message = self.mac_control.adjust_volume("down")
-            return (True, message or JarvisPersonality.get_acknowledgment())
+            return (True, message or self.personality.get_acknowledgment())
         
         elif "volume to full" in lower_input or "max volume" in lower_input or "full volume" in lower_input:
             success, message = self.mac_control.set_volume(100)
@@ -644,7 +644,7 @@ class Jarvis:
         if "my name is" in lower_input:
             name = user_input.split("my name is", 1)[1].strip().split()[0].capitalize()
             self.memory.save_preferences({"user_name": name})
-            response = JarvisPersonality.get_acknowledgment()
+            response = self.personality.get_acknowledgment()
             return (True, f"{response} Noted, sir. I shall address you as Mr. {name} from now on.")
         
         # Remember command - save custom facts
@@ -656,19 +656,19 @@ class Jarvis:
             memories = self.memory.preferences.get("custom_memories", [])
             memories.append(fact)
             self.memory.save_preferences({"custom_memories": memories})
-            response = JarvisPersonality.get_acknowledgment()
+            response = self.personality.get_acknowledgment()
             return (True, f"{response} I've made a note of that: '{fact}'")
         
         # Forget command - clear custom memories
         if "forget that" in lower_input or "forget what i told you" in lower_input:
             self.memory.save_preferences({"custom_memories": []})
-            response = JarvisPersonality.get_acknowledgment()
+            response = self.personality.get_acknowledgment()
             return (True, f"{response} Custom memories cleared, sir.")
         
         # Clear history
         if "clear history" in lower_input or "forget everything" in lower_input:
             self.memory.clear_history()
-            response = JarvisPersonality.get_acknowledgment()
+            response = self.personality.get_acknowledgment()
             return (True, f"{response} I've cleared my memory of our previous conversations.")
         
         # ============================================================================

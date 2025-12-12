@@ -3,6 +3,7 @@ from src.core.llm import LLMClient
 from src.core.voice_io import VoiceInput, VoiceOutput
 from src.core.wake_word import WakeWordListener
 from src.core.personality_v2 import JarvisPersonalityV2 as JarvisPersonality
+from src.features.morning_briefing import MorningBriefing
 from src.core.mac_control import MacController
 from src.core.focus_mode import FocusMode
 from src.core.workflows import WorkflowExecutor
@@ -67,6 +68,9 @@ class Jarvis:
             personality=self.personality,
             llm_client=self.llm
         )
+        
+        # Morning Briefing
+        self.morning_briefing = MorningBriefing()
         
         # Don't apply settings on startup - only when user explicitly requests
         # Settings are saved and can be applied on demand

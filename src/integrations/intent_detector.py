@@ -98,6 +98,7 @@ Possible intents:
 - WHATSAPP_MESSAGE: Sending a message via WhatsApp
 - EMAIL_SEARCH: Searching emails in Mail app
 - WEBSITE_VISIT: Opening a website or browser with specific URL
+- MORNING_BRIEFING: Starting the day, getting weather/news/status
 - GENERAL_CHAT: Default for conversation, questions, ideas, or if unclear
 - UNKNOWN: Can't determine intent
 
@@ -109,6 +110,7 @@ Extract data intelligently:
 - For YOUTUBE_SEARCH: Extract what to search for
 - For GOOGLE_SEARCH: Extract search query
 - For WEBSITE_VISIT: Extract website URL or site name
+- For MORNING_BRIEFING: No extraction needed
 
 Examples:
 - "open calculator" → APP_OPEN, app: "Calculator"
@@ -118,6 +120,10 @@ Examples:
 - "open chrome and go to google.com" → WEBSITE_VISIT, website: "google.com"
 - "go to youtube.com" → WEBSITE_VISIT, website: "youtube.com"
 - "i want to work on a new project" → GENERAL_CHAT
+- "start my day" → MORNING_BRIEFING
+- "morning briefing" → MORNING_BRIEFING
+- "what's the update for today" → MORNING_BRIEFING
+- "wake up protocol" → MORNING_BRIEFING
 - "give me some ideas" → GENERAL_CHAT
 - "tell me a joke" → GENERAL_CHAT
 - "play lo-fi beats" → SPOTIFY_PLAY, query: "lo-fi beats"

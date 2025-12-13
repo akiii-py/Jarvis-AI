@@ -26,6 +26,10 @@ A movie-accurate recreation of Tony Stark's JARVIS AI assistant from the Marvel 
   - **Terminal-Only Mode**: Searches internet visibly in terminal, no browser window
   - **Deep Analysis**: Reads multiple sources and synthesizes a report
   - **Auto-Reports**: Saves markdown reports to `data/research_reports/`
+- **Calendar Integration** 📅: "Schedule meeting..."
+  - **Silent Operation**: Adds events in the background via AppleScript without opening the Calendar app
+  - **Smart Date Parsing**: Robustly assumes future dates and handles cross-region locale differences (DD/MM vs MM/DD)
+  - **Google Calendar Sync**: Prioritizes syncing with Google Calendar accounts
 - **Dynamic Model Switching**:
   - `coding` mode: qwen2.5-coder (programming, debugging)
   - `research` mode: deepseek-r1 (deep reasoning)

@@ -15,7 +15,7 @@ from .intent_detector import IntentDetector
 class AppNavigator:
     """Master controller for all app navigation and automation with LLM-powered intent detection."""
     
-    def __init__(self, mac_control, personality, llm_client):
+    def __init__(self, mac_control, personality, llm_client, calendar_controller=None):
         """
         Initialize AppNavigator
         
@@ -23,9 +23,11 @@ class AppNavigator:
             mac_control: MacController for system operations
             personality: JARVIS personality for responses
             llm_client: LLM client for intent detection
+            calendar_controller: Controller for Calendar app
         """
         self.mac_control = mac_control
         self.personality = personality
+        self.calendar = calendar_controller
         
         # Initialize sub-controllers
         self.spotify = SpotifyController(mac_control)
@@ -58,7 +60,10 @@ class AppNavigator:
             "GOOGLE_SEARCH": self._handle_google_search,
             "WHATSAPP_MESSAGE": self._handle_whatsapp_message,
             "EMAIL_SEARCH": self._handle_email_search,
+            "WHATSAPP_MESSAGE": self._handle_whatsapp_message,
+            "EMAIL_SEARCH": self._handle_email_search,
             "WEBSITE_VISIT": self._handle_website_visit,
+            "CALENDAR_SCHEDULE": self._handle_calendar_schedule,
         }
         
         handler = intent_handlers.get(intent.type)
@@ -235,3 +240,26 @@ class AppNavigator:
         except Exception as e:
             print(f"Website visit error: {e}")
             return (True, "I'm afraid something went wrong with opening the website, sir.")
+
+    def _handle_calendar_schedule(self, data: dict) -> Tuple[bool, str]:
+        """Handle calendar scheduling intent"""
+        if not self.calendar:
+            return (True, "Calendar integration is not initialized, sir.")
+            
+        summary = data.get("summary", "")
+        start_time = data.get("start_time", "")
+        
+        if not summary or not start_time:
+            return (True, "I need both a summary and a time for the event, sir. Example: 'Schedule meeting with Bob at 2pm'.")
+        
+        try:
+            success, msg = self.calendar.create_event(summary, start_time)
+            
+            if success:
+                ack = self.personality.get_acknowledgment()
+                return (True, f"{ack} {msg}")
+            else:
+                return (True, msg)
+        except Exception as e:
+            print(f"Calendar error: {e}")
+            return (True, "I'm afraid I encountered an error accessing your calendar, sir.")

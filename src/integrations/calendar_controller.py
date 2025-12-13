@@ -48,30 +48,46 @@ class CalendarController:
             from datetime import timedelta
             end_date = start_date + timedelta(minutes=duration_mins)
             
-            # Format dates for AppleScript: "jobname, monthname day, year at hours:minutes:seconds"
-            # However, AppleScript date parsing can be tricky depending on locale.
-            # A safer generic format for AppleScript is usually "MM/DD/YYYY HH:MM:SS"
+            # Format dates for AppleScript using components to avoid locale issues (MM/DD vs DD/MM)
+            # We construct a base date independently of string parsing
             
-            apple_script_date_start = start_date.strftime("%m/%d/%Y %H:%M:%S")
-            apple_script_date_end = end_date.strftime("%m/%d/%Y %H:%M:%S")
-            
-            # AppleScript to create event
             script = f'''
             tell application "Calendar"
-                tell calendar "Calendar"
-                    make new event at end with properties {{summary:"{summary}", start date:date "{apple_script_date_start}", end date:date "{apple_script_date_end}"}}
+                set preferredCalendars to {{"akshatg570@gmail.com", "Calendar", "Home", "Work"}}
+                set targetCalendar to missing value
+                
+                -- Try to find a preferred calendar
+                repeat with calName in preferredCalendars
+                    try
+                        set targetCalendar to calendar (calName as string)
+                        exit repeat
+                    end try
+                end repeat
+                
+                if targetCalendar is missing value then
+                    set targetCalendar to first calendar
+                end if
+                
+                -- robust date construction
+                set startDate to current date
+                set year of startDate to {start_date.year}
+                set month of startDate to {start_date.month}
+                set day of startDate to {start_date.day}
+                set time of startDate to ({start_date.hour} * 3600 + {start_date.minute} * 60)
+                
+                set endDate to current date
+                set year of endDate to {end_date.year}
+                set month of endDate to {end_date.month}
+                set day of endDate to {end_date.day}
+                set time of endDate to ({end_date.hour} * 3600 + {end_date.minute} * 60)
+                
+                set targetName to name of targetCalendar
+                
+                tell targetCalendar
+                    make new event at end with properties {{summary:"{summary}", start date:startDate, end date:endDate}}
                 end tell
-            end tell
-            '''
-            
-            # Try specific calendar names if "Calendar" fails or check default
-            # Actually, getting the default calendar is safer
-            script = f'''
-            tell application "Calendar"
-                set defaultCal to first calendar
-                tell defaultCal
-                    make new event at end with properties {{summary:"{summary}", start date:date "{apple_script_date_start}", end date:date "{apple_script_date_end}"}}
-                end tell
+                
+                return targetName
             end tell
             '''
             
@@ -79,8 +95,10 @@ class CalendarController:
             result = subprocess.run(['osascript', '-e', script], capture_output=True, text=True)
             
             if result.returncode == 0:
-                fmt_date = start_date.strftime("%A, %B %d at %I:%M %p")
-                return (True, f"Scheduled '{summary}' for {fmt_date}.")
+                calendar_name = result.stdout.strip()
+                # Include YEAR in the confirmation to fail-safe user's concern
+                fmt_date = start_date.strftime("%A, %B %d, %Y at %I:%M %p")
+                return (True, f"Scheduled '{summary}' on {fmt_date} ({calendar_name} calendar).")
             else:
                 self.logger.error(f"AppleScript error: {result.stderr}")
                 return (False, "I encountered an error accessing your calendar, sir. Please check permissions.")

@@ -112,6 +112,7 @@ Extract data intelligently:
 - For GOOGLE_SEARCH: ONLY if user explicitly says "google X" or "open browser". Extract query.
 - For WEBSITE_VISIT: Extract website URL or site name
 - For RESEARCH_TOPIC: DEFAULT for "search", "find", "who is", "what is". Extract topic.
+- For CALENDAR_SCHEDULE: Extract "summary" (what) and "start_time" (when).
 - For MORNING_BRIEFING: No extraction needed
 
 Examples:
@@ -128,6 +129,9 @@ Examples:
 - "what is a neural network" → RESEARCH_TOPIC, topic: "neural network"
 - "give me a report on the french revolution" → RESEARCH_TOPIC, topic: "french revolution"
 - "latest football news" → RESEARCH_TOPIC, topic: "latest football news"
+- "schedule a meeting with Bob tomorrow at 2pm" → CALENDAR_SCHEDULE, summary: "Meeting with Bob", start_time: "tomorrow at 2pm"
+- "remind me to buy milk next friday" → CALENDAR_SCHEDULE, summary: "Buy milk", start_time: "next friday"
+- "add event team sync on monday 9 am" → CALENDAR_SCHEDULE, summary: "Team Sync", start_time: "monday 9 am"
 - "google dsa" → GOOGLE_SEARCH, query: "dsa"
 - "open google and search python" → GOOGLE_SEARCH, query: "python"
 - "search amazon on browser" → GOOGLE_SEARCH, query: "amazon"
@@ -173,7 +177,8 @@ Respond with ONLY this JSON structure:
                 "SPOTIFY_PLAY", "SPOTIFY_CONTROL",
                 "YOUTUBE_SEARCH", "GOOGLE_SEARCH",
                 "WHATSAPP_MESSAGE", "EMAIL_SEARCH",
-                "WEBSITE_VISIT", "RESEARCH_TOPIC"
+                "WEBSITE_VISIT", "RESEARCH_TOPIC",
+                "CALENDAR_SCHEDULE"
             }
             
             is_app_command = intent_type in app_commands and confidence >= 0.7

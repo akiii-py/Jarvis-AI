@@ -8,3 +8,4 @@ schedule
 PyGithub
 elevenlabs
 python-dotenv
+dateparser

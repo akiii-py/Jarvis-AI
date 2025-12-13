@@ -5,6 +5,7 @@ from src.core.wake_word import WakeWordListener
 from src.core.personality_v2 import JarvisPersonalityV2 as JarvisPersonality
 from src.features.morning_briefing import MorningBriefing
 from src.features.research_agent import ResearchAgent
+from src.integrations.calendar_controller import CalendarController
 from src.core.mac_control import MacController
 from src.core.focus_mode import FocusMode
 from src.core.workflows import WorkflowExecutor
@@ -82,6 +83,9 @@ class Jarvis:
         
         # Research Agent
         self.research_agent = ResearchAgent(self.llm)
+        
+        # Calendar
+        self.calendar = CalendarController()
         
         # Don't apply settings on startup - only when user explicitly requests
         # Settings are saved and can be applied on demand
@@ -271,13 +275,35 @@ class Jarvis:
                 return True, "Please specify a topic for research, sir."
         
         # ============================================================================
+        # CALENDAR COMMANDS
+        # ============================================================================
+        # This section assumes an intent detection mechanism has already identified "CALENDAR_SCHEDULE"
+        # and extracted the summary and time. For this specific instruction, we'll add a direct check
+        # for "schedule" or "add to calendar" in the input as a placeholder.
+        if ("schedule" in lower_input or "add to calendar" in lower_input) and ("event" in lower_input or "meeting" in lower_input):
+            # Simple extraction for demonstration; a real system would use LLM for this
+            summary_match = re.search(r'(?:schedule|add to calendar)\s+(?:an\s+)?(?:event|meeting)\s+(?:about|for)\s+(.+?)(?:\s+at\s+(.+))?', lower_input)
+            if summary_match:
+                summary = summary_match.group(1).strip()
+                start_time_str = summary_match.group(2)
+                
+                if summary and start_time_str:
+                    print(f"📅 Scheduling: {summary} at {start_time_str}")
+                    success, response = self.calendar.create_event(summary, start_time_str)
+                    return True, response
+                else:
+                    return True, "I need both a summary and time for the event, sir. Example: 'schedule event about project review at 3pm'"
+            else:
+                return True, "Please specify what to schedule, sir. Example: 'schedule event about project review at 3pm'"
+
+        # ============================================================================
         # FOCUS MODE COMMANDS - PRIORITY 0 (Check before app control!)
         # ============================================================================
         
         # Start focus mode
         if "focus mode" in lower_input and ("start" in lower_input or "for" in lower_input or "begin" in lower_input):
             # Extract duration
-            import re
+            # Extract duration
             duration_match = re.search(r'(\d+)\s*(hour|hours|minute|minutes|min|mins)', lower_input)
             
             if duration_match:
@@ -353,7 +379,7 @@ class Jarvis:
         
         # Remind me in X minutes/hours
         if "remind me" in lower_input and ("in" in lower_input or "after" in lower_input):
-            import re
+            # Extract time
             
             # Extract time
             time_match = re.search(r'(\d+)\s*(minute|minutes|min|hour|hours|hr)', lower_input)
@@ -381,7 +407,7 @@ class Jarvis:
         
         # Every day at X, do Y
         if ("every day" in lower_input or "daily" in lower_input) and " at " in lower_input:
-            import re
+            # Extract time
             
             # Extract time
             time_match = re.search(r'(\d{1,2}):?(\d{2})?\s*(am|pm)?', lower_input)
@@ -448,7 +474,7 @@ class Jarvis:
         # Create repo
         if "create repo" in lower_input or "create repository" in lower_input:
             # Extract repo name
-            import re
+            # Extract repo name
             name_match = re.search(r'create repo(?:sitory)?\s+(?:called\s+)?([a-zA-Z0-9_-]+)', lower_input)
             if name_match:
                 repo_name = name_match.group(1)

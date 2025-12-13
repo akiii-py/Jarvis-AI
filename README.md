@@ -40,6 +40,7 @@ A movie-accurate recreation of Tony Stark's JARVIS AI assistant from the Marvel 
 - **Smart Focus Mode**: Blocks distractions for set duration
 - **GitHub Integration**: Manage repos, push/pull code via voice
 - **Scheduling**: Reminders and recurring daily tasks
+- **Calendar Integration**: Natural language event scheduling
 - **Command Logging**: Tracks usage history
 
 ## 🚀 Quick Start
@@ -143,6 +144,8 @@ _Press SPACE/ENTER to start talking. Press again to stop._
 | "Remind me in [X] mins" | Set a timer/reminder |
 | "Remember [fact]" | Store info in long-term memory |
 | "Focus mode for [X] hours" | Block distractions |
+| "Schedule meeting with [Person] [Time]" | Create calendar event |
+| "Add event [Name] [Time]" | Add to macOS Calendar |
 
 ## 📁 Project Structure
 
@@ -161,6 +164,7 @@ Jarvis_AI_Antigravity/
 │   ├── integrations/
 │   │   ├── app_navigator.py  # App control router
 │   │   ├── browser_controller.py # Web automation
+│   │   ├── calendar_controller.py # macOS Calendar automation
 │   │   ├── spotify_controller.py # Spotify AppleScript control
 │   │   ├── web_scraper.py    # Headless internet search
 │   │   └── intent_detector.py # LLM-based intent parser
